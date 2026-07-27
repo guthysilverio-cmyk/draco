@@ -34,7 +34,7 @@ local function getGuiParent()
 end
 
 -- =====================
--- PAINEL DE KEY (KeyAuth)
+-- PAINEL DE KEY (API Customizada)
 -- =====================
 
 local authGui = Instance.new("ScreenGui")
@@ -161,13 +161,16 @@ repeat task.wait(0.05) until keyConfirmed
 kStatus.Text="Validando key..."; kStatus.TextColor3=Color3.fromRGB(180,180,200)
 kBtn.Active=false; task.wait(0.1)
 
--- KeyAuth via API direta
-local function kaRequest(body)
+-- API Customizada
+local function customAuthRequest(key)
     local opts = {
-        Url     = "https://keyauth.win/api/1.0/",
+        Url     = "https://authkeef.discloud.app/",
         Method  = "POST",
-        Headers = {["Content-Type"]="application/x-www-form-urlencoded"},
-        Body    = body,
+        Headers = {
+            ["Content-Type"] = "application/json",
+            ["API_SECRET"] = "keef_secret_2024_super_seguro"
+        },
+        Body    = HttpService:JSONEncode({key = key}),
     }
     local response = nil
     for _, fn in ipairs({
@@ -186,20 +189,15 @@ local function kaRequest(body)
     return nil
 end
 
-local initData = kaRequest("type=init&name=Draco&ownerid=H5AiXGE89t&ver=1.0&hash=0000000000000000000000000000000000000000000000000000000000000000")
+local authData = customAuthRequest(userKey)
 
 local _authOk, _authMsg = false, "Erro de conexao. Tente novamente."
 
-if not initData or not initData.sessionid then
-    _authMsg = (initData and initData.message) or "Erro ao iniciar sessao KeyAuth."
-else
-    local licData = kaRequest("type=license&key="..userKey.."&ownerid=H5AiXGE89t&sessionid="..initData.sessionid)
-    if licData then
-        if licData.success == true then
-            _authOk = true; _authMsg = ""
-        else
-            _authMsg = licData.message or "Key invalida ou expirada!"
-        end
+if authData then
+    if authData.success == true then
+        _authOk = true; _authMsg = ""
+    else
+        _authMsg = authData.message or "Key invalida ou expirada!"
     end
 end
 
