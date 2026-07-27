@@ -158,7 +158,7 @@ kStatus.Text="Validando key..."; kStatus.TextColor3=Color3.fromRGB(180,180,200)
 kBtn.Active=false; task.wait(0.1)
 
 -- KeyAuth via API direta
-local KEYAUTH_NAME    = "Guthysilverio's Application"
+local KEYAUTH_NAME    = "DracoApp"
 local KEYAUTH_OWNERID = "H5AiXGE89t"
 local KEYAUTH_VERSION = "1.0"
 
@@ -190,7 +190,8 @@ end
 local initData = kaRequest(
     "type=init&name="..HttpService:UrlEncode(KEYAUTH_NAME)..
     "&ownerid="..KEYAUTH_OWNERID..
-    "&ver="..KEYAUTH_VERSION
+    "&ver="..KEYAUTH_VERSION..
+    "&hash=0000000000000000000000000000000000000000000000000000000000000000"
 )
 
 local _authOk, _authMsg = false, "Erro de conexao. Tente novamente."
