@@ -346,29 +346,74 @@ end
 -- EFEITOS VISUAIS
 -- =====================
 
-local orig_lt={ClockTime=Lighting.ClockTime,Brightness=Lighting.Brightness,Ambient=Lighting.Ambient,OutdoorAmbient=Lighting.OutdoorAmbient,FogEnd=Lighting.FogEnd}
+local orig_lt={ClockTime=Lighting.ClockTime,Brightness=Lighting.Brightness,Ambient=Lighting.Ambient,OutdoorAmbient=Lighting.OutdoorAmbient,FogEnd=Lighting.FogEnd,GlobalShadows=Lighting.GlobalShadows}
 local saved_parts={}; local saved_effects={}
 local function apply_visuals()
-    if G.NightMode then Lighting.ClockTime=0; Lighting.Brightness=1; Lighting.Ambient=Color3.fromRGB(45,45,60); Lighting.OutdoorAmbient=Color3.fromRGB(30,30,45)
-    else Lighting.ClockTime=orig_lt.ClockTime; Lighting.Brightness=orig_lt.Brightness; Lighting.Ambient=orig_lt.Ambient; Lighting.OutdoorAmbient=orig_lt.OutdoorAmbient end
-    Lighting.GlobalShadows=not(G.NoShadows or G.FPSBoost); Lighting.FogEnd=G.FPSBoost and 100000 or orig_lt.FogEnd
+    -- Modo noturno
+    if G.NightMode then
+        Lighting.ClockTime = 0
+        Lighting.Brightness = 0.5
+        Lighting.Ambient = Color3.fromRGB(60, 60, 80)
+        Lighting.OutdoorAmbient = Color3.fromRGB(40, 40, 60)
+        Lighting.FogEnd = 1000
+    else
+        Lighting.ClockTime = orig_lt.ClockTime
+        Lighting.Brightness = orig_lt.Brightness
+        Lighting.Ambient = orig_lt.Ambient
+        Lighting.OutdoorAmbient = orig_lt.OutdoorAmbient
+        Lighting.FogEnd = orig_lt.FogEnd
+    end
+
+    -- Sombras
+    Lighting.GlobalShadows = not (G.NoShadows or G.FPSBoost)
+
+    -- FPS Boost: desativa efeitos visuais pesados
+    if G.FPSBoost then
+        Lighting.FogEnd = 100000
+        -- desativa efeitos de iluminação
+        for _, obj in ipairs(Lighting:GetChildren()) do
+            if obj:IsA("BloomEffect") or obj:IsA("BlurEffect") or
+               obj:IsA("ColorCorrectionEffect") or obj:IsA("DepthOfFieldEffect") or
+               obj:IsA("SunRaysEffect") then
+                obj.Enabled = false
+            end
+        end
+        -- desativa partículas e efeitos no workspace
+        for _, o in ipairs(Workspace:GetDescendants()) do
+            if o:IsA("ParticleEmitter") or o:IsA("Trail") or o:IsA("Beam") or o:IsA("Fire") or o:IsA("Smoke") or o:IsA("Sparkles") then
+                if saved_effects[o] == nil then saved_effects[o] = o.Enabled end
+                o.Enabled = false
+            end
+        end
+    else
+        -- reativa efeitos de iluminação
+        for _, obj in ipairs(Lighting:GetChildren()) do
+            if obj:IsA("BloomEffect") or obj:IsA("BlurEffect") or
+               obj:IsA("ColorCorrectionEffect") or obj:IsA("DepthOfFieldEffect") or
+               obj:IsA("SunRaysEffect") then
+                obj.Enabled = true
+            end
+        end
+        for o,e in pairs(saved_effects) do if o and o.Parent then o.Enabled=e end end
+        saved_effects={}
+        if not G.NightMode then Lighting.FogEnd=orig_lt.FogEnd end
+    end
+
+    -- Chão cinza
     if G.GrayFloor then
         for _,p in ipairs(Workspace:GetDescendants()) do
-            if p:IsA("BasePart") and p.Anchored then local n=p.Name:lower()
+            if p:IsA("BasePart") and p.Anchored then
+                local n=p.Name:lower()
                 if n:find("floor") or n:find("ground") or n:find("baseplate") or n:find("chao") then
                     if not saved_parts[p] then saved_parts[p]={Color=p.Color,Material=p.Material} end
                     p.Color=Color3.fromRGB(95,95,95); p.Material=Enum.Material.SmoothPlastic
                 end
             end
         end
-    else for p,d in pairs(saved_parts) do if p and p.Parent then p.Color=d.Color; p.Material=d.Material end end; saved_parts={} end
-    if G.FPSBoost then
-        for _,o in ipairs(Workspace:GetDescendants()) do
-            if o:IsA("ParticleEmitter") or o:IsA("Trail") or o:IsA("Beam") then
-                if saved_effects[o]==nil then saved_effects[o]=o.Enabled end; o.Enabled=false
-            end
-        end
-    else for o,e in pairs(saved_effects) do if o and o.Parent then o.Enabled=e end end; saved_effects={} end
+    else
+        for p,d in pairs(saved_parts) do if p and p.Parent then p.Color=d.Color; p.Material=d.Material end end
+        saved_parts={}
+    end
 end
 
 -- =====================
@@ -461,27 +506,44 @@ end
 local function apply_clothes(sid,pid)
     local c=LocalPlayer.Character; if not c then return end
     save_clothes()
-    local s=c:FindFirstChildOfClass("Shirt"); local p=c:FindFirstChildOfClass("Pants")
-    if not s then s=Instance.new("Shirt");s.Parent=c end
-    if not p then p=Instance.new("Pants");p.Parent=c end
-    s.ShirtTemplate=sid; p.PantsTemplate=pid
+    local s=c:FindFirstChildOfClass("Shirt")
+    local p=c:FindFirstChildOfClass("Pants")
+    if not s then
+        s=Instance.new("Shirt"); s.Parent=c
+    end
+    if not p then
+        p=Instance.new("Pants"); p.Parent=c
+    end
+    s.ShirtTemplate=sid
+    p.PantsTemplate=pid
 end
 local function restore_clothes()
     if jersey_conn then jersey_conn:Disconnect(); jersey_conn=nil end
     active_jersey=nil
-    local c=LocalPlayer.Character; if not c then return end
+    local c=LocalPlayer.Character; if not c then original_clothes={}; return end
     local s=c:FindFirstChildOfClass("Shirt"); local p=c:FindFirstChildOfClass("Pants")
-    if s then if original_clothes.shirt~="" then s.ShirtTemplate=original_clothes.shirt else s:Destroy() end end
-    if p then if original_clothes.pants~="" then p.PantsTemplate=original_clothes.pants else p:Destroy() end end
+    if s then
+        if original_clothes.shirt and original_clothes.shirt~="" then
+            s.ShirtTemplate=original_clothes.shirt
+        else s:Destroy() end
+    end
+    if p then
+        if original_clothes.pants and original_clothes.pants~="" then
+            p.PantsTemplate=original_clothes.pants
+        else p:Destroy() end
+    end
     original_clothes={}
 end
 local function start_jersey(sid,pid,name)
-    restore_clothes(); active_jersey=name; apply_clothes(sid,pid)
+    restore_clothes()
+    active_jersey=name
+    apply_clothes(sid,pid)
+    if jersey_conn then jersey_conn:Disconnect() end
     jersey_conn=RunService.Heartbeat:Connect(function()
         if active_jersey~=name then return end
         local c=LocalPlayer.Character; if not c then return end
         local s=c:FindFirstChildOfClass("Shirt")
-        if s and s.ShirtTemplate~=sid then apply_clothes(sid,pid) end
+        if not s or s.ShirtTemplate~=sid then apply_clothes(sid,pid) end
     end)
 end
 
@@ -596,24 +658,6 @@ TabSpin:AddSection({ Name = "Recompensas" })
 TabSpin:AddToggle({ Name="Auto Spin Style",      Default=false, Callback=function(v) G.AutoSpinStyle=v end })
 TabSpin:AddToggle({ Name="Auto Spin Habilidade", Default=false, Callback=function(v) G.AutoSpinHabi=v  end })
 TabSpin:AddToggle({ Name="Auto Yen",             Default=false, Callback=function(v) G.AutoYen=v       end })
-
--- ======== ABA CORES ========
-local TabCores = Window:MakeTab({ Name = "Cores", Icon = "rbxassetid://4483345998" })
-TabCores:AddSection({ Name = "Cor da Interface" })
-local CORES = {
-    {nome="Roxo",    cor=Color3.fromRGB(138,43,226)},
-    {nome="Azul",    cor=Color3.fromRGB(0,120,255)},
-    {nome="Vermelho",cor=Color3.fromRGB(220,30,30)},
-    {nome="Laranja", cor=Color3.fromRGB(255,140,0)},
-    {nome="Preto",   cor=Color3.fromRGB(30,30,30)},
-    {nome="Branco",  cor=Color3.fromRGB(255,255,255)},
-}
-for _, c in ipairs(CORES) do
-    TabCores:AddButton({ Name=c.nome, Callback=function()
-        G.ThemeColor=c.cor
-        OrionLib:MakeNotification({Name="DRACO",Content="Cor: "..c.nome,Image="rbxassetid://4483345998",Time=2})
-    end})
-end
 
 -- ======== ABA MISC ========
 local TabMisc = Window:MakeTab({ Name = "Misc", Icon = "rbxassetid://4483345998" })
