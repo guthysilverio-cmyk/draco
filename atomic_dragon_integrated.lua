@@ -186,7 +186,7 @@ local function kaRequest(body)
     return nil
 end
 
-local initData = kaRequest("type=init&name=DracoApp&ownerid=H5AiXGE89t&secret=ca5b279214afeb45d9189590c6c8c9a968cda93a6d78079e32775473c20c8f50&ver=1.0&hash=0000000000000000000000000000000000000000000000000000000000000000")
+local initData = kaRequest("type=init&name=Draco&ownerid=H5AiXGE89t&secret=ca5b279214afeb45d9189590c6c8c9a968cda93a6d78079e32775473c20c8f50&ver=1.0&hash=0000000000000000000000000000000000000000000000000000000000000000")
 
 local _authOk, _authMsg = false, "Erro de conexao. Tente novamente."
 
