@@ -186,19 +186,24 @@ local function kaRequest(body)
     return nil
 end
 
-local initData = kaRequest("type=init&name=Draco&ownerid=H5AiXGE89t&secret=ca5b279214afeb45d9189590c6c8c9a968cda93a6d78079e32775473c20c8f50&ver=1.0&hash=0000000000000000000000000000000000000000000000000000000000000000")
+local initData = kaRequest("type=init&name=Draco&ownerid=H5AiXGE89t&ver=1.0&hash=0000000000000000000000000000000000000000000000000000000000000000")
+
+print("[DEBUG] initData:", initData)
 
 local _authOk, _authMsg = false, "Erro de conexao. Tente novamente."
 
 if not initData or not initData.sessionid then
     _authMsg = (initData and initData.message) or "Erro ao iniciar sessao KeyAuth."
+    print("[DEBUG] Erro init:", _authMsg)
 else
-    local licData = kaRequest("type=license&key="..userKey.."&ownerid=H5AiXGE89t&secret=ca5b279214afeb45d9189590c6c8c9a968cda93a6d78079e32775473c20c8f50&sessionid="..initData.sessionid)
+    local licData = kaRequest("type=license&key="..userKey.."&ownerid=H5AiXGE89t&sessionid="..initData.sessionid)
+    print("[DEBUG] licData:", licData)
     if licData then
         if licData.success == true then
             _authOk = true; _authMsg = ""
         else
             _authMsg = licData.message or "Key invalida ou expirada!"
+            print("[DEBUG] Erro license:", _authMsg)
         end
     end
 end
