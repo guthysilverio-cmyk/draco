@@ -178,12 +178,17 @@ local function kaRequest(body)
         function() return HttpService:RequestAsync(opts) end,
     }) do
         local ok, res = pcall(fn)
-        if ok and res and (res.Body or res.body) then response = res; break end
+        if ok and res and (res.Body or res.body) then
+            response = res
+            break
+        end
     end
     if not response then return nil end
-    local ok, data = pcall(HttpService.JSONDecode, HttpService, response.Body or response.body or "")
-    if ok then return data end
-    return nil
+    local rawBody = response.Body or response.body or ""
+    local ok, data = pcall(HttpService.JSONDecode, HttpService, rawBody)
+    if ok and data then return data end
+    -- retorna a resposta crua como mensagem de erro para debug
+    return {success=false, message=rawBody, sessionid=nil}
 end
 
 -- Passo 1: init — cria a sessão
