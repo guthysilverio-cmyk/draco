@@ -125,9 +125,6 @@ pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification",{Title="DRACO",Text="Autenticado!",Duration=3})
 end)
 
-local Env = getfenv()
-local _ = {}
-
 -- =====================
 -- CONFIGURAÇÕES GLOBAIS
 -- =====================
@@ -194,42 +191,7 @@ local LocalPlayer = Players.LocalPlayer
 local Camera = Workspace.CurrentCamera
 local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
 
--- =====================
--- ANTI-DETECÇÃO
--- =====================
-
-(function()
-    if getfenv then
-        local env = getfenv()
-        env.script = nil
-        env.getfenv = function() return env end
-    end
-    
-    if hookfunction then
-        local original = game.IsDescendantOf
-        hookfunction(game.IsDescendantOf, function(instance, parent)
-            if instance == script and parent == script:GetService("Workspace") then
-                return false
-            end
-            return original(instance, parent)
-        end)
-    end
-    
-    if rconsoleprint then
-        hookfunction(rconsoleprint, function() end)
-    end
-    
-    local original_print = print
-    print = function(...)
-        local args = {...}
-        for i, v in ipairs(args) do
-            if type(v) == "string" and v:match("script") then
-                args[i] = "[REDACTED]"
-            end
-        end
-        return original_print(table.unpack(args))
-    end
-end)()
+-- anti-detecção removida para compatibilidade com executores
 
 -- =====================
 -- SALVAR/CARREGAR CONFIG
