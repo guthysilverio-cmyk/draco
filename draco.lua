@@ -158,10 +158,6 @@ kStatus.Text="Validando key..."; kStatus.TextColor3=Color3.fromRGB(180,180,200)
 kBtn.Active=false; task.wait(0.1)
 
 -- KeyAuth via API direta
-local KEYAUTH_NAME    = "DracoApp"
-local KEYAUTH_OWNERID = "H5AiXGE89t"
-local KEYAUTH_VERSION = "1.0"
-
 local function kaRequest(body)
     local opts = {
         Url     = "https://keyauth.win/api/1.2/",
@@ -178,42 +174,30 @@ local function kaRequest(body)
         function() return HttpService:RequestAsync(opts) end,
     }) do
         local ok, res = pcall(fn)
-        if ok and res and (res.Body or res.body) then
-            response = res
-            break
-        end
+        if ok and res and (res.Body or res.body) then response = res; break end
     end
     if not response then return nil end
-    local rawBody = response.Body or response.body or ""
-    local ok, data = pcall(HttpService.JSONDecode, HttpService, rawBody)
+    local ok, data = pcall(HttpService.JSONDecode, HttpService, response.Body or response.body or "")
     if ok and data then return data end
-    -- retorna a resposta crua como mensagem de erro para debug
-    return {success=false, message=rawBody, sessionid=nil}
+    return nil
 end
 
--- Passo 1: init — cria a sessão
-local initData = kaRequest(
-    "type=init&name=DracoApp&ownerid=H5AiXGE89t&ver=1.0&hash=0000000000000000000000000000000000000000000000000000000000000000"
-)
+local initData = kaRequest("type=init&name=DracoApp&ownerid=H5AiXGE89t&ver=1.0&hash=0000000000000000000000000000000000000000000000000000000000000000")
 
 local _authOk, _authMsg = false, "Erro de conexao. Tente novamente."
 
 if not initData or not initData.sessionid then
-    _authMsg = initData and (initData.message or "Erro ao iniciar sessao.") or "Sem resposta do KeyAuth."
+    _authMsg = (initData and initData.message) or "Erro ao iniciar sessao KeyAuth."
 else
-    -- Passo 2: license — valida a key com o sessionid
-    local licData = kaRequest(
-        "type=license&key="..userKey..
-        "&ownerid=H5AiXGE89t&sessionid="..initData.sessionid
-    )
-    )
+    local licData = kaRequest("type=license&key="..userKey.."&ownerid=H5AiXGE89t&sessionid="..initData.sessionid)
     if licData then
         if licData.success == true then
-            _authOk  = true
-            _authMsg = ""
+            _authOk = true; _authMsg = ""
         else
             _authMsg = licData.message or "Key invalida ou expirada!"
         end
+    end
+end
     end
 end
 
