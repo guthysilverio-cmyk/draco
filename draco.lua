@@ -157,8 +157,19 @@ repeat task.wait(0.05) until keyConfirmed
 kStatus.Text="Validando key..."; kStatus.TextColor3=Color3.fromRGB(180,180,200)
 kBtn.Active=false; task.wait(0.1)
 
-local _body = HttpService:JSONEncode({key=userKey, hwid=tostring(LocalPlayer.UserId)})
-local _opts = {Url="https://authkeef.discloud.app/api/validate", Method="POST", Headers={["Content-Type"]="application/json"}, Body=_body}
+-- KeyAuth via API direta
+local KEYAUTH_NAME    = "Guthysilverio's Application"
+local KEYAUTH_OWNERID = "H5AiXGE89t"
+local KEYAUTH_SECRET  = "ca5b279214afeb45d9189590c6c8c9a968cda93a6d78079e32775473c20c8f50"
+local KEYAUTH_VERSION = "1.0"
+
+local _body = "type=license&key="..userKey.."&ownerid="..KEYAUTH_OWNERID.."&name="..HttpService:UrlEncode(KEYAUTH_NAME).."&ver="..KEYAUTH_VERSION
+local _opts = {
+    Url     = "https://keyauth.win/api/1.2/",
+    Method  = "POST",
+    Headers = {["Content-Type"]="application/x-www-form-urlencoded"},
+    Body    = _body,
+}
 local _response = nil
 for _, fn in ipairs({
     function() return request(_opts) end,
