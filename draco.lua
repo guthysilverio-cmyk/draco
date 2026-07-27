@@ -160,34 +160,57 @@ kBtn.Active=false; task.wait(0.1)
 -- KeyAuth via API direta
 local KEYAUTH_NAME    = "Guthysilverio's Application"
 local KEYAUTH_OWNERID = "H5AiXGE89t"
-local KEYAUTH_SECRET  = "ca5b279214afeb45d9189590c6c8c9a968cda93a6d78079e32775473c20c8f50"
 local KEYAUTH_VERSION = "1.0"
 
-local _body = "type=license&key="..userKey.."&ownerid="..KEYAUTH_OWNERID.."&name="..HttpService:UrlEncode(KEYAUTH_NAME).."&ver="..KEYAUTH_VERSION
-local _opts = {
-    Url     = "https://keyauth.win/api/1.2/",
-    Method  = "POST",
-    Headers = {["Content-Type"]="application/x-www-form-urlencoded"},
-    Body    = _body,
-}
-local _response = nil
-for _, fn in ipairs({
-    function() return request(_opts) end,
-    function() return http_request(_opts) end,
-    function() return (syn and syn.request)(_opts) end,
-    function() return (http and http.request)(_opts) end,
-    function() return HttpService:RequestAsync(_opts) end,
-}) do
-    local ok, res = pcall(fn)
-    if ok and res and (res.Body or res.body) then _response = res; break end
+local function kaRequest(body)
+    local opts = {
+        Url     = "https://keyauth.win/api/1.2/",
+        Method  = "POST",
+        Headers = {["Content-Type"]="application/x-www-form-urlencoded"},
+        Body    = body,
+    }
+    local response = nil
+    for _, fn in ipairs({
+        function() return request(opts) end,
+        function() return http_request(opts) end,
+        function() return (syn and syn.request)(opts) end,
+        function() return (http and http.request)(opts) end,
+        function() return HttpService:RequestAsync(opts) end,
+    }) do
+        local ok, res = pcall(fn)
+        if ok and res and (res.Body or res.body) then response = res; break end
+    end
+    if not response then return nil end
+    local ok, data = pcall(HttpService.JSONDecode, HttpService, response.Body or response.body or "")
+    if ok then return data end
+    return nil
 end
 
+-- Passo 1: init — cria a sessão
+local initData = kaRequest(
+    "type=init&name="..HttpService:UrlEncode(KEYAUTH_NAME)..
+    "&ownerid="..KEYAUTH_OWNERID..
+    "&ver="..KEYAUTH_VERSION
+)
+
 local _authOk, _authMsg = false, "Erro de conexao. Tente novamente."
-if _response then
-    local ok2, data = pcall(HttpService.JSONDecode, HttpService, _response.Body or _response.body or "")
-    if ok2 and data then
-        if data.success == true then _authOk=true; _authMsg=""
-        else _authMsg = data.message or "Key invalida ou expirada!" end
+
+if not initData or not initData.sessionid then
+    _authMsg = "Erro ao iniciar sessao KeyAuth."
+else
+    -- Passo 2: license — valida a key com o sessionid
+    local licData = kaRequest(
+        "type=license&key="..HttpService:UrlEncode(userKey)..
+        "&ownerid="..KEYAUTH_OWNERID..
+        "&sessionid="..initData.sessionid
+    )
+    if licData then
+        if licData.success == true then
+            _authOk  = true
+            _authMsg = ""
+        else
+            _authMsg = licData.message or "Key invalida ou expirada!"
+        end
     end
 end
 
