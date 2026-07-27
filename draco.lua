@@ -70,9 +70,20 @@ kTitle.Font = Enum.Font.GothamBold
 kTitle.TextXAlignment = Enum.TextXAlignment.Center
 kTitle.ZIndex = 12
 
+local kCreator = Instance.new("TextLabel", card)
+kCreator.Size = UDim2.new(1,0,0,16)
+kCreator.Position = UDim2.fromOffset(0,38)
+kCreator.BackgroundTransparency = 1
+kCreator.Text = "Criador: draco goat"
+kCreator.TextColor3 = Color3.fromRGB(120,120,150)
+kCreator.TextSize = 11
+kCreator.Font = Enum.Font.Gotham
+kCreator.TextXAlignment = Enum.TextXAlignment.Center
+kCreator.ZIndex = 12
+
 local kSub = Instance.new("TextLabel", card)
 kSub.Size = UDim2.new(1,0,0,20)
-kSub.Position = UDim2.fromOffset(0,52)
+kSub.Position = UDim2.fromOffset(0,58)
 kSub.BackgroundTransparency = 1
 kSub.Text = "Digite sua key de acesso"
 kSub.TextColor3 = Color3.fromRGB(180,180,200)
