@@ -164,7 +164,7 @@ kBtn.Active=false; task.wait(0.1)
 -- KeyAuth via API direta
 local function kaRequest(body)
     local opts = {
-        Url     = "https://keyauth.win/api/1.2/",
+        Url     = "https://keyauth.win/api/1.3/",
         Method  = "POST",
         Headers = {["Content-Type"]="application/x-www-form-urlencoded"},
         Body    = body,
@@ -186,14 +186,14 @@ local function kaRequest(body)
     return nil
 end
 
-local initData = kaRequest("type=init&name=DracoApp&ownerid=H5AiXGE89t&ver=1.0&hash=0000000000000000000000000000000000000000000000000000000000000000")
+local initData = kaRequest("type=init&name=DracoApp&ownerid=H5AiXGE89t&secret=ca5b279214afeb45d9189590c6c8c9a968cda93a6d78079e32775473c20c8f50&ver=1.0&hash=0000000000000000000000000000000000000000000000000000000000000000")
 
 local _authOk, _authMsg = false, "Erro de conexao. Tente novamente."
 
 if not initData or not initData.sessionid then
     _authMsg = (initData and initData.message) or "Erro ao iniciar sessao KeyAuth."
 else
-    local licData = kaRequest("type=license&key="..userKey.."&ownerid=H5AiXGE89t&sessionid="..initData.sessionid)
+    local licData = kaRequest("type=license&key="..userKey.."&ownerid=H5AiXGE89t&secret=ca5b279214afeb45d9189590c6c8c9a968cda93a6d78079e32775473c20c8f50&sessionid="..initData.sessionid)
     if licData then
         if licData.success == true then
             _authOk = true; _authMsg = ""
