@@ -164,7 +164,7 @@ kBtn.Active=false; task.wait(0.1)
 -- KeyAuth via API direta
 local function kaRequest(body)
     local opts = {
-        Url     = "https://keyauth.win/api/1.3/",
+        Url     = "https://keyauth.win/api/1.0/",
         Method  = "POST",
         Headers = {["Content-Type"]="application/x-www-form-urlencoded"},
         Body    = body,
@@ -188,22 +188,17 @@ end
 
 local initData = kaRequest("type=init&name=Draco&ownerid=H5AiXGE89t&ver=1.0&hash=0000000000000000000000000000000000000000000000000000000000000000")
 
-print("[DEBUG] initData:", initData)
-
 local _authOk, _authMsg = false, "Erro de conexao. Tente novamente."
 
 if not initData or not initData.sessionid then
     _authMsg = (initData and initData.message) or "Erro ao iniciar sessao KeyAuth."
-    print("[DEBUG] Erro init:", _authMsg)
 else
     local licData = kaRequest("type=license&key="..userKey.."&ownerid=H5AiXGE89t&sessionid="..initData.sessionid)
-    print("[DEBUG] licData:", licData)
     if licData then
         if licData.success == true then
             _authOk = true; _authMsg = ""
         else
             _authMsg = licData.message or "Key invalida ou expirada!"
-            print("[DEBUG] Erro license:", _authMsg)
         end
     end
 end
