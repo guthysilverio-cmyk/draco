@@ -188,22 +188,19 @@ end
 
 -- Passo 1: init — cria a sessão
 local initData = kaRequest(
-    "type=init&name="..HttpService:UrlEncode(KEYAUTH_NAME)..
-    "&ownerid="..KEYAUTH_OWNERID..
-    "&ver="..KEYAUTH_VERSION..
-    "&hash=0000000000000000000000000000000000000000000000000000000000000000"
+    "type=init&name=DracoApp&ownerid=H5AiXGE89t&ver=1.0&hash=0000000000000000000000000000000000000000000000000000000000000000"
 )
 
 local _authOk, _authMsg = false, "Erro de conexao. Tente novamente."
 
 if not initData or not initData.sessionid then
-    _authMsg = "Erro ao iniciar sessao KeyAuth."
+    _authMsg = initData and (initData.message or "Erro ao iniciar sessao.") or "Sem resposta do KeyAuth."
 else
     -- Passo 2: license — valida a key com o sessionid
     local licData = kaRequest(
-        "type=license&key="..HttpService:UrlEncode(userKey)..
-        "&ownerid="..KEYAUTH_OWNERID..
-        "&sessionid="..initData.sessionid
+        "type=license&key="..userKey..
+        "&ownerid=H5AiXGE89t&sessionid="..initData.sessionid
+    )
     )
     if licData then
         if licData.success == true then
