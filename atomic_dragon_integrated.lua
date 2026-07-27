@@ -78,7 +78,7 @@ local kCreator = Instance.new("TextLabel", card)
 kCreator.Size = UDim2.new(1,0,0,16)
 kCreator.Position = UDim2.fromOffset(0,38)
 kCreator.BackgroundTransparency = 1
-kCreator.Text = "Criador: ZYRK & DEDE (Base: Draco)"
+kCreator.Text = "Criador: Dragon"
 kCreator.TextColor3 = Color3.fromRGB(120,120,150)
 kCreator.TextSize = 11
 kCreator.Font = Enum.Font.Gotham
@@ -186,7 +186,7 @@ local function kaRequest(body)
     return nil
 end
 
-local initData = kaRequest("type=init&name=AtomicDragon&ownerid=H5AiXGE89t&ver=1.0&hash=0000000000000000000000000000000000000000000000000000000000000000")
+local initData = kaRequest("type=init&name=DracoApp&ownerid=H5AiXGE89t&ver=1.0&hash=0000000000000000000000000000000000000000000000000000000000000000")
 
 local _authOk, _authMsg = false, "Erro de conexao. Tente novamente."
 
@@ -807,7 +807,7 @@ TabMove:AddToggle({ Name = "Mostrar FPS", Default = false, Callback = function(v
 local TabMisc = Window:MakeTab({ Name = "Misc", Icon = "rbxassetid://4483345998" })
 TabMisc:AddSection({ Name = "Info" })
 TabMisc:AddLabel("ATOMIC DRAGON - Script Volleyball")
-TabMisc:AddLabel("Criador: ZYRK & DEDE (Base: Draco)")
+TabMisc:AddLabel("Criador: Dragon")
 TabMisc:AddParagraph("Teclas", "F = Freeze | G = Leed Feat | L = Auto Long")
 TabMisc:AddButton({ Name = "Otimizar Grafico", Callback = function()
     for _, obj in ipairs(Workspace:GetDescendants()) do
@@ -832,11 +832,11 @@ end })
 
 OrionLib:MakeNotification({
     Name    = "ATOMIC DRAGON",
-    Content = "Script carregado! | Criador: ZYRK & DEDE",
+    Content = "Script carregado! | Criador: Dragon",
     Image   = "rbxassetid://4483345998",
     Time    = 4
 })
 
 OrionLib:Init()
 
-print("ATOMIC DRAGON carregado. Creditos: ZYRK & DEDE (Base: Draco)")
+print("ATOMIC DRAGON carregado. Creditos: Dragon")
