@@ -4,82 +4,135 @@
 ]]
 
 -- =====================
--- SYSTEM KEY (KEEF)
+-- SERVIÇOS
 -- =====================
 
-local _TweenService = game:GetService("TweenService")
-local _HttpService  = game:GetService("HttpService")
-local _Players      = game:GetService("Players")
-local _LocalPlayer  = _Players.LocalPlayer
-if not _LocalPlayer then
-    _Players:GetPropertyChangedSignal("LocalPlayer"):Wait()
-    _LocalPlayer = _Players.LocalPlayer
-end
+local TweenService      = game:GetService("TweenService")
+local RunService        = game:GetService("RunService")
+local Players           = game:GetService("Players")
+local UserInputService  = game:GetService("UserInputService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace         = game:GetService("Workspace")
+local Lighting          = game:GetService("Lighting")
+local HttpService       = game:GetService("HttpService")
+local LocalPlayer       = Players.LocalPlayer
+local Camera            = Workspace.CurrentCamera
+
+-- =====================
+-- PARENT DA GUI
+-- =====================
 
 local function getGuiParent()
     if typeof(gethui) == "function" then return gethui() end
     local ok, cg = pcall(game.GetService, game, "CoreGui")
     if ok and cg then return cg end
-    return _LocalPlayer:WaitForChild("PlayerGui", 10) or _LocalPlayer.PlayerGui
+    return LocalPlayer.PlayerGui
 end
 
+-- =====================
+-- PAINEL DE KEY
+-- =====================
+
 local authGui = Instance.new("ScreenGui")
-authGui.Name = "DRACOAuth"; authGui.ResetOnSpawn = false
-authGui.IgnoreGuiInset = true; authGui.DisplayOrder = 9999
+authGui.Name = "DRACOAuth"
+authGui.ResetOnSpawn = false
+authGui.IgnoreGuiInset = true
+authGui.DisplayOrder = 9999
 authGui.Parent = getGuiParent()
 
 local overlay = Instance.new("Frame", authGui)
-overlay.Size = UDim2.fromScale(1,1); overlay.BackgroundColor3 = Color3.fromRGB(10,10,15)
-overlay.BackgroundTransparency = 0.2; overlay.BorderSizePixel = 0; overlay.ZIndex = 10
+overlay.Size = UDim2.fromScale(1,1)
+overlay.BackgroundColor3 = Color3.fromRGB(10,10,15)
+overlay.BackgroundTransparency = 0.2
+overlay.BorderSizePixel = 0
+overlay.ZIndex = 10
 
 local card = Instance.new("Frame", overlay)
-card.AnchorPoint = Vector2.new(0.5,0.5); card.Position = UDim2.fromScale(0.5,0.5)
-card.Size = UDim2.fromOffset(420,220); card.BackgroundColor3 = Color3.fromRGB(18,18,25)
-card.BorderSizePixel = 0; card.ZIndex = 11
+card.AnchorPoint = Vector2.new(0.5,0.5)
+card.Position = UDim2.fromScale(0.5,0.5)
+card.Size = UDim2.fromOffset(420,220)
+card.BackgroundColor3 = Color3.fromRGB(18,18,25)
+card.BorderSizePixel = 0
+card.ZIndex = 11
 Instance.new("UICorner", card).CornerRadius = UDim.new(0,12)
 local cStroke = Instance.new("UIStroke", card)
-cStroke.Color = Color3.fromRGB(138,43,226); cStroke.Thickness = 2
+cStroke.Color = Color3.fromRGB(138,43,226)
+cStroke.Thickness = 2
 
 local kTitle = Instance.new("TextLabel", card)
-kTitle.Size = UDim2.new(1,0,0,40); kTitle.Position = UDim2.fromOffset(0,14)
-kTitle.BackgroundTransparency = 1; kTitle.Text = "DRACO"
-kTitle.TextColor3 = Color3.fromRGB(138,43,226); kTitle.TextSize = 22
-kTitle.Font = Enum.Font.GothamBold; kTitle.TextXAlignment = Enum.TextXAlignment.Center; kTitle.ZIndex = 12
+kTitle.Size = UDim2.new(1,0,0,40)
+kTitle.Position = UDim2.fromOffset(0,14)
+kTitle.BackgroundTransparency = 1
+kTitle.Text = "DRACO"
+kTitle.TextColor3 = Color3.fromRGB(138,43,226)
+kTitle.TextSize = 22
+kTitle.Font = Enum.Font.GothamBold
+kTitle.TextXAlignment = Enum.TextXAlignment.Center
+kTitle.ZIndex = 12
 
 local kSub = Instance.new("TextLabel", card)
-kSub.Size = UDim2.new(1,0,0,20); kSub.Position = UDim2.fromOffset(0,52)
-kSub.BackgroundTransparency = 1; kSub.Text = "Digite sua key de acesso"
-kSub.TextColor3 = Color3.fromRGB(180,180,200); kSub.TextSize = 13
-kSub.Font = Enum.Font.Gotham; kSub.TextXAlignment = Enum.TextXAlignment.Center; kSub.ZIndex = 12
+kSub.Size = UDim2.new(1,0,0,20)
+kSub.Position = UDim2.fromOffset(0,52)
+kSub.BackgroundTransparency = 1
+kSub.Text = "Digite sua key de acesso"
+kSub.TextColor3 = Color3.fromRGB(180,180,200)
+kSub.TextSize = 13
+kSub.Font = Enum.Font.Gotham
+kSub.TextXAlignment = Enum.TextXAlignment.Center
+kSub.ZIndex = 12
 
 local kInputFrame = Instance.new("Frame", card)
-kInputFrame.Size = UDim2.new(1,-40,0,40); kInputFrame.Position = UDim2.fromOffset(20,82)
-kInputFrame.BackgroundColor3 = Color3.fromRGB(30,30,42); kInputFrame.BorderSizePixel = 0; kInputFrame.ZIndex = 12
+kInputFrame.Size = UDim2.new(1,-40,0,40)
+kInputFrame.Position = UDim2.fromOffset(20,82)
+kInputFrame.BackgroundColor3 = Color3.fromRGB(30,30,42)
+kInputFrame.BorderSizePixel = 0
+kInputFrame.ZIndex = 12
 Instance.new("UICorner", kInputFrame).CornerRadius = UDim.new(0,8)
 Instance.new("UIStroke", kInputFrame).Color = Color3.fromRGB(80,80,110)
 
 local kBox = Instance.new("TextBox", kInputFrame)
-kBox.Size = UDim2.new(1,-20,1,0); kBox.Position = UDim2.fromOffset(10,0)
-kBox.BackgroundTransparency = 1; kBox.PlaceholderText = "XXXXX-XXXXX-XXXXX-XXXXX"
-kBox.PlaceholderColor3 = Color3.fromRGB(100,100,130); kBox.Text = ""
-kBox.TextColor3 = Color3.fromRGB(240,240,255); kBox.TextSize = 14
-kBox.Font = Enum.Font.Code; kBox.ClearTextOnFocus = false; kBox.ZIndex = 13
+kBox.Size = UDim2.new(1,-20,1,0)
+kBox.Position = UDim2.fromOffset(10,0)
+kBox.BackgroundTransparency = 1
+kBox.PlaceholderText = "XXXXX-XXXXX-XXXXX-XXXXX"
+kBox.PlaceholderColor3 = Color3.fromRGB(100,100,130)
+kBox.Text = ""
+kBox.TextColor3 = Color3.fromRGB(240,240,255)
+kBox.TextSize = 14
+kBox.Font = Enum.Font.Code
+kBox.ClearTextOnFocus = false
+kBox.ZIndex = 13
 
 local kBtn = Instance.new("TextButton", card)
-kBtn.Size = UDim2.new(1,-40,0,38); kBtn.Position = UDim2.fromOffset(20,134)
-kBtn.BackgroundColor3 = Color3.fromRGB(138,43,226); kBtn.BorderSizePixel = 0
-kBtn.Text = "Confirmar"; kBtn.TextColor3 = Color3.new(1,1,1)
-kBtn.TextSize = 15; kBtn.Font = Enum.Font.GothamBold; kBtn.ZIndex = 12; kBtn.AutoButtonColor = false
+kBtn.Size = UDim2.new(1,-40,0,38)
+kBtn.Position = UDim2.fromOffset(20,134)
+kBtn.BackgroundColor3 = Color3.fromRGB(138,43,226)
+kBtn.BorderSizePixel = 0
+kBtn.Text = "Confirmar"
+kBtn.TextColor3 = Color3.new(1,1,1)
+kBtn.TextSize = 15
+kBtn.Font = Enum.Font.GothamBold
+kBtn.ZIndex = 12
+kBtn.AutoButtonColor = false
 Instance.new("UICorner", kBtn).CornerRadius = UDim.new(0,8)
 
 local kStatus = Instance.new("TextLabel", card)
-kStatus.Size = UDim2.new(1,0,0,20); kStatus.Position = UDim2.fromOffset(0,178)
-kStatus.BackgroundTransparency = 1; kStatus.Text = ""
-kStatus.TextColor3 = Color3.fromRGB(255,80,80); kStatus.TextSize = 12
-kStatus.Font = Enum.Font.Gotham; kStatus.TextXAlignment = Enum.TextXAlignment.Center; kStatus.ZIndex = 12
+kStatus.Size = UDim2.new(1,0,0,20)
+kStatus.Position = UDim2.fromOffset(0,178)
+kStatus.BackgroundTransparency = 1
+kStatus.Text = ""
+kStatus.TextColor3 = Color3.fromRGB(255,80,80)
+kStatus.TextSize = 12
+kStatus.Font = Enum.Font.Gotham
+kStatus.TextXAlignment = Enum.TextXAlignment.Center
+kStatus.ZIndex = 12
 
-kBtn.MouseEnter:Connect(function() _TweenService:Create(kBtn,TweenInfo.new(0.15),{BackgroundColor3=Color3.fromRGB(160,60,255)}):Play() end)
-kBtn.MouseLeave:Connect(function() _TweenService:Create(kBtn,TweenInfo.new(0.15),{BackgroundColor3=Color3.fromRGB(138,43,226)}):Play() end)
+kBtn.MouseEnter:Connect(function()
+    TweenService:Create(kBtn,TweenInfo.new(0.15),{BackgroundColor3=Color3.fromRGB(160,60,255)}):Play()
+end)
+kBtn.MouseLeave:Connect(function()
+    TweenService:Create(kBtn,TweenInfo.new(0.15),{BackgroundColor3=Color3.fromRGB(138,43,226)}):Play()
+end)
 
 local userKey, keyConfirmed = "", false
 local function tryConfirm()
@@ -93,7 +146,7 @@ repeat task.wait(0.05) until keyConfirmed
 kStatus.Text="Validando key..."; kStatus.TextColor3=Color3.fromRGB(180,180,200)
 kBtn.Active=false; task.wait(0.1)
 
-local _body = _HttpService:JSONEncode({key=userKey, hwid=tostring(_LocalPlayer.UserId)})
+local _body = HttpService:JSONEncode({key=userKey, hwid=tostring(LocalPlayer.UserId)})
 local _opts = {Url="https://authkeef.discloud.app/api/validate", Method="POST", Headers={["Content-Type"]="application/json"}, Body=_body}
 local _response = nil
 for _, fn in ipairs({
@@ -101,7 +154,7 @@ for _, fn in ipairs({
     function() return http_request(_opts) end,
     function() return (syn and syn.request)(_opts) end,
     function() return (http and http.request)(_opts) end,
-    function() return _HttpService:RequestAsync(_opts) end,
+    function() return HttpService:RequestAsync(_opts) end,
 }) do
     local ok, res = pcall(fn)
     if ok and res and (res.Body or res.body) then _response = res; break end
@@ -109,7 +162,7 @@ end
 
 local _authOk, _authMsg = false, "Erro de conexao. Tente novamente."
 if _response then
-    local ok2, data = pcall(_HttpService.JSONDecode, _HttpService, _response.Body or _response.body or "")
+    local ok2, data = pcall(HttpService.JSONDecode, HttpService, _response.Body or _response.body or "")
     if ok2 and data then
         if data.success == true then _authOk=true; _authMsg=""
         else _authMsg = data.message or "Key invalida ou expirada!" end
@@ -122,1380 +175,462 @@ if not _authOk then
 end
 authGui:Destroy()
 pcall(function()
-    game:GetService("StarterGui"):SetCore("SendNotification",{Title="DRACO",Text="Autenticado!",Duration=3})
+    game:GetService("StarterGui"):SetCore("SendNotification",{Title="DRACO",Text="Autenticado! Carregando...",Duration=3})
 end)
 
 -- =====================
--- CONFIGURAÇÕES GLOBAIS
+-- ESTADO GLOBAL
 -- =====================
 
 local G = {
-    Enabled = false,
-    HitboxEnabled = false,
-    HitboxSize = 1,
+    HitboxEnabled      = false,
+    HitboxSize         = 1,
     HitboxTransparency = 0.3,
-    HitboxKey = "H",
-    HitboxTouch = false,
-    CameraJump = false,
-    FreezeAir = false,
-    FreezeAirKey = Enum.KeyCode.F,
-    FreezeTouch = false,
-    LeedFeat = false,
-    LeedFeatKey = Enum.KeyCode.G,
-    LeedFeatTouch = false,
-    AutoLong = false,
-    AutoLongKey = Enum.KeyCode.L,
-    AutoLongAngle = 15,
-    AutoLongDir = "DIREITA",
-    AutoLongTouch = false,
-    RainbowTag = false,
-    CustomTagName = "",
-    ESPEnabled = false,
-    ESPLineSize = 10,
-    AutoSpinStyle = false,
-    AutoSpinHabi = false,
-    AutoYen = false,
-    InterfaceMode = "PC",
-    JerseyEnabled = false,
-    JerseyAtomicEnabled = false,
-    JerseyDragaoEnabled = false,
-    JerseyDragaoTeam = "PRETA",
-    JerseyAtomicTeam = "PRETA",
-    JerseyPijamaEnabled = false,
-    JerseyPijamaTeam = "PRETO",
-    ESPNeon = false,
-    ThemeColor = Color3.fromRGB(138, 43, 226),
-    FPSBoost = false,
-    NightMode = false,
-    GrayFloor = false,
-    NoShadows = false,
-    CrosshairEnabled = false,
-    CrosshairStyle = "CRUZ",
-    CrosshairY = 50,
+    ESPEnabled         = false,
+    ESPLineSize        = 10,
+    ESPNeon            = false,
+    AutoLong           = false,
+    AutoLongAngle      = 15,
+    AutoLongDir        = "DIREITA",
+    FreezeAir          = false,
+    LeedFeat           = false,
+    CameraJump         = false,
+    FPSBoost           = false,
+    NightMode          = false,
+    GrayFloor          = false,
+    NoShadows          = false,
+    AutoSpinStyle      = false,
+    AutoSpinHabi       = false,
+    AutoYen            = false,
+    ThemeColor         = Color3.fromRGB(138,43,226),
 }
 
 -- =====================
--- SERVIÇOS
+-- HITBOX
 -- =====================
 
-local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Workspace = game:GetService("Workspace")
-local Lighting = game:GetService("Lighting")
-local HttpService = game:GetService("HttpService")
-
-local LocalPlayer = Players.LocalPlayer
-local Camera = Workspace.CurrentCamera
-local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
-
--- anti-detecção removida para compatibilidade com executores
-
--- =====================
--- SALVAR/CARREGAR CONFIG
--- =====================
-
-local CONFIG_FILES = {
-    "ZYNEXConfig_V2.json",
-    "ZYNEXConfig.json",
-}
-
-local function color_to_table(color)
-    return {r = color.R, g = color.G, b = color.B}
-end
-
-local function table_to_color(tbl)
-    if type(tbl) == "table" and tbl.r and tbl.g and tbl.b then
-        return Color3.new(tbl.r, tbl.g, tbl.b)
-    end
-    return Color3.fromRGB(138, 43, 226)
-end
-
-local function enum_to_string(enum_item)
-    if typeof(enum_item) == "EnumItem" then
-        return enum_item.Name
-    end
-    return tostring(enum_item)
-end
-
-local function parse_bool(value, default)
-    if value == nil then return default == true end
-    return value == true
-end
-
-local function parse_number(value, default)
-    local num = tonumber(value)
-    if num == nil then return default end
-    return num
-end
-
-local function parse_interface_mode(mode)
-    if isMobile then
-        return "ANTIGA"
-    end
-    if mode == "PC" or mode == "ANTIGA" then
-        return mode
-    end
-    return "PC"
-end
-
-function save_config()
-    if not writefile then
-        warn("[ZYNEX] writefile não existe")
-        return false
-    end
-    
-    local data = {
-        Version = 5,
-        HitboxEnabled = G.HitboxEnabled,
-        HitboxSize = G.HitboxSize,
-        HitboxTransparency = G.HitboxTransparency,
-        HitboxKey = tostring(G.HitboxKey or "H"),
-        HitboxTouch = G.HitboxTouch,
-        FreezeAir = G.FreezeAir,
-        FreezeAirKey = enum_to_string(G.FreezeAirKey),
-        FreezeTouch = G.FreezeTouch,
-        LeedFeat = G.LeedFeat,
-        LeedFeatKey = enum_to_string(G.LeedFeatKey),
-        LeedFeatTouch = G.LeedFeatTouch,
-        CameraJump = G.CameraJump,
-        ESPEnabled = G.ESPEnabled,
-        ESPLineSize = G.ESPLineSize,
-        ESPNeon = G.ESPNeon,
-        AutoSpinStyle = G.AutoSpinStyle,
-        AutoSpinHabi = G.AutoSpinHabi,
-        AutoYen = G.AutoYen,
-        JerseyEnabled = G.JerseyEnabled,
-        JerseyAtomicEnabled = G.JerseyAtomicEnabled,
-        JerseyAtomicTeam = tostring(G.JerseyAtomicTeam or "PRETA"),
-        JerseyDragaoEnabled = G.JerseyDragaoEnabled,
-        JerseyDragaoTeam = tostring(G.JerseyDragaoTeam or "PRETA"),
-        JerseyPijamaEnabled = G.JerseyPijamaEnabled,
-        JerseyPijamaTeam = tostring(G.JerseyPijamaTeam or "PRETO"),
-        FPSBoost = G.FPSBoost,
-        NightMode = G.NightMode,
-        GrayFloor = G.GrayFloor,
-        NoShadows = G.NoShadows,
-        CrosshairEnabled = G.CrosshairEnabled,
-        CrosshairStyle = tostring(G.CrosshairStyle or "CRUZ"),
-        CrosshairY = G.CrosshairY,
-        AutoLong = G.AutoLong,
-        AutoLongKey = enum_to_string(G.AutoLongKey),
-        AutoLongAngle = G.AutoLongAngle,
-        AutoLongDir = tostring(G.AutoLongDir or "DIREITA"),
-        AutoLongTouch = G.AutoLongTouch,
-        RainbowTag = false,
-        CustomTagName = "",
-        InterfaceMode = parse_interface_mode(G.InterfaceMode),
-        ThemeColor = color_to_table(G.ThemeColor)
-    }
-    
-    local json_success, json_string = pcall(function()
-        return HttpService:JSONEncode(data)
-    end)
-    
-    if not json_success or not json_string then
-        warn("[ZYNEX] Erro ao gerar JSON")
-        return false
-    end
-    
-    for _, filename in ipairs(CONFIG_FILES) do
-        if filename and filename ~= "" then
-            pcall(function()
-                writefile(filename, json_string)
-            end)
-        end
-    end
-    return true
-end
-
-function load_config()
-    if not isfile or not readfile then
-        warn("[ZYNEX] isfile/readfile não existe")
-        return nil
-    end
-    
-    for _, filename in ipairs(CONFIG_FILES) do
-        if filename and filename ~= "" then
-            local success, content = pcall(function()
-                return readfile(filename)
-            end)
-            
-            if success and type(content) == "string" and content ~= "" then
-                local json_success, data = pcall(function()
-                    return HttpService:JSONDecode(content)
-                end)
-                
-                if json_success and type(data) == "table" then
-                    return data, filename
-                end
-            end
-        end
-    end
-    return nil
-end
-
-function apply_config(data)
-    if type(data) ~= "table" then return false end
-    
-    if data.ThemeColor then G.ThemeColor = table_to_color(data.ThemeColor) end
-    
-    G.HitboxEnabled = parse_bool(data.HitboxEnabled, G.HitboxEnabled)
-    G.HitboxSize = parse_number(data.HitboxSize, G.HitboxSize)
-    G.HitboxTransparency = parse_number(data.HitboxTransparency, G.HitboxTransparency)
-    if data.HitboxKey ~= nil then G.HitboxKey = tostring(data.HitboxKey) end
-    G.HitboxTouch = parse_bool(data.HitboxTouch, G.HitboxTouch)
-    
-    G.FreezeAir = parse_bool(data.FreezeAir, G.FreezeAir)
-    if data.FreezeAirKey ~= nil then
-        G.FreezeAirKey = Enum.KeyCode[tostring(data.FreezeAirKey)] or Enum.KeyCode.F
-    end
-    G.FreezeTouch = parse_bool(data.FreezeTouch, G.FreezeTouch)
-    
-    G.LeedFeat = parse_bool(data.LeedFeat, G.LeedFeat)
-    if data.LeedFeatKey ~= nil then
-        G.LeedFeatKey = Enum.KeyCode[tostring(data.LeedFeatKey)] or Enum.KeyCode.G
-    end
-    G.LeedFeatTouch = parse_bool(data.LeedFeatTouch, G.LeedFeatTouch)
-    
-    G.CameraJump = parse_bool(data.CameraJump, G.CameraJump)
-    G.ESPEnabled = parse_bool(data.ESPEnabled, G.ESPEnabled)
-    G.ESPLineSize = parse_number(data.ESPLineSize, G.ESPLineSize)
-    G.ESPNeon = parse_bool(data.ESPNeon, G.ESPNeon)
-    G.AutoSpinStyle = parse_bool(data.AutoSpinStyle, G.AutoSpinStyle)
-    G.AutoSpinHabi = parse_bool(data.AutoSpinHabi, G.AutoSpinHabi)
-    G.AutoYen = parse_bool(data.AutoYen, G.AutoYen)
-    
-    G.JerseyEnabled = parse_bool(data.JerseyEnabled, G.JerseyEnabled)
-    G.JerseyAtomicEnabled = parse_bool(data.JerseyAtomicEnabled, G.JerseyAtomicEnabled)
-    if data.JerseyAtomicTeam ~= nil then
-        local team = tostring(data.JerseyAtomicTeam)
-        if team == "PRETA" or team == "LARANJA" or team == "ROXO" or team == "VERMELHO" or team == "BRANCO" then
-            G.JerseyAtomicTeam = team
-        end
-    end
-    
-    G.JerseyDragaoEnabled = parse_bool(data.JerseyDragaoEnabled, G.JerseyDragaoEnabled)
-    if data.JerseyDragaoTeam ~= nil then
-        local team = tostring(data.JerseyDragaoTeam)
-        if team == "PRETA" or team == "LARANJA" or team == "ROXO" or team == "VERMELHO" or team == "BRANCO" then
-            G.JerseyDragaoTeam = team
-        end
-    end
-    
-    G.JerseyPijamaEnabled = parse_bool(data.JerseyPijamaEnabled, G.JerseyPijamaEnabled)
-    if data.JerseyPijamaTeam ~= nil then
-        local team = tostring(data.JerseyPijamaTeam)
-        if team == "PRETA" then team = "PRETO" end
-        if team == "PRETO" or team == "ORANGE" or team == "ROXO" or team == "VERMELHO" or team == "BRANCO" then
-            G.JerseyPijamaTeam = team
-        end
-    end
-    
-    G.FPSBoost = parse_bool(data.FPSBoost, G.FPSBoost)
-    G.NightMode = parse_bool(data.NightMode, G.NightMode)
-    G.GrayFloor = parse_bool(data.GrayFloor, G.GrayFloor)
-    G.NoShadows = parse_bool(data.NoShadows, G.NoShadows)
-    
-    G.CrosshairEnabled = parse_bool(data.CrosshairEnabled, G.CrosshairEnabled)
-    if data.CrosshairStyle ~= nil then
-        local style = tostring(data.CrosshairStyle)
-        if style == "CRUZ" or style == "PONTO" or style == "CIRCULO" or style == "X" then
-            G.CrosshairStyle = style
-        end
-    end
-    G.CrosshairY = math.clamp(parse_number(data.CrosshairY, G.CrosshairY), 0, 50)
-    
-    G.AutoLong = parse_bool(data.AutoLong, G.AutoLong)
-    if data.AutoLongKey ~= nil then
-        G.AutoLongKey = Enum.KeyCode[tostring(data.AutoLongKey)] or Enum.KeyCode.L
-    end
-    G.AutoLongAngle = parse_number(data.AutoLongAngle, G.AutoLongAngle)
-    if data.AutoLongDir ~= nil then G.AutoLongDir = tostring(data.AutoLongDir) end
-    G.AutoLongTouch = parse_bool(data.AutoLongTouch, G.AutoLongTouch)
-    
-    G.RainbowTag = false
-    G.CustomTagName = ""
-    G.InterfaceMode = parse_interface_mode(data.InterfaceMode)
-    
-    return true
-end
-
--- =====================
--- JERSEY SYSTEM
--- =====================
-
-local original_clothes = {}
-local jersey_connection = nil
-local saved_parts = {}
-local saved_effects = {}
-
-local function is_floor_part(part)
-    if not part:IsA("BasePart") then return false end
-    local name = part.Name:lower()
-    return part.Anchored and (name:find("floor") or name:find("ground") or name:find("baseplate") or name:find("chao") or name:find("chão"))
-end
-
-function apply_jersey()
-    local character = LocalPlayer.Character
-    if not character then return end
-    
-    pcall(function()
-        local assets = ReplicatedStorage:WaitForChild("Assets")
-        local jersey = assets:WaitForChild("Jersey")
-        local tuxedo = jersey:WaitForChild("TuxedoJersey")
-        local white_team = tuxedo:WaitForChild("White Team")
-        
-        local pajamas = jersey:WaitForChild("PajamasJersey")
-        local white_pajamas = pajamas:WaitForChild("White Team")
-        local pants_template = white_pajamas:WaitForChild("Pants").PantsTemplate
-        
-        local shirt = character:FindFirstChildOfClass("Shirt")
-        local pants = character:FindFirstChildOfClass("Pants")
-        
-        if not original_clothes.shirt then
-            original_clothes.shirt = shirt and shirt.ShirtTemplate or ""
-        end
-        if not original_clothes.pants then
-            original_clothes.pants = pants and pants.PantsTemplate or ""
-        end
-        
-        if shirt then
-            shirt.ShirtTemplate = white_team:WaitForChild("Shirt").ShirtTemplate
-            if pants then
-                pants.PantsTemplate = pants_template
-            else
-                Instance.new("Pants", character)
-            end
-        else
-            Instance.new("Shirt", character)
-        end
-    end)
-end
-
-function apply_visual_effects()
-    local original_lighting = {
-        ClockTime = Lighting.ClockTime,
-        Brightness = Lighting.Brightness,
-        Ambient = Lighting.Ambient,
-        OutdoorAmbient = Lighting.OutdoorAmbient,
-        FogEnd = Lighting.FogEnd
-    }
-    
-    if G.NightMode then
-        Lighting.ClockTime = 0
-        Lighting.Brightness = 1
-        Lighting.Ambient = Color3.fromRGB(45, 45, 60)
-        Lighting.OutdoorAmbient = Color3.fromRGB(30, 30, 45)
-    else
-        Lighting.ClockTime = original_lighting.ClockTime
-        Lighting.Brightness = original_lighting.Brightness
-        Lighting.Ambient = original_lighting.Ambient
-        Lighting.OutdoorAmbient = original_lighting.OutdoorAmbient
-    end
-    
-    Lighting.GlobalShadows = not (G.NoShadows or G.FPSBoost)
-    Lighting.FogEnd = G.FPSBoost and 100000 or original_lighting.FogEnd
-    
-    if G.GrayFloor then
-        for _, part in ipairs(Workspace:GetDescendants()) do
-            if is_floor_part(part) then
-                if not saved_parts[part] then
-                    saved_parts[part] = {Color = part.Color, Material = part.Material}
-                end
-                part.Color = Color3.fromRGB(95, 95, 95)
-                part.Material = Enum.Material.SmoothPlastic
-            end
-        end
-    else
-        for part, data in pairs(saved_parts) do
-            if part and part.Parent then
-                part.Color = data.Color
-                part.Material = data.Material
-            end
-        end
-        saved_parts = {}
-    end
-    
-    if G.FPSBoost then
-        for _, obj in ipairs(Workspace:GetDescendants()) do
-            if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Beam") then
-                if saved_effects[obj] == nil then
-                    saved_effects[obj] = obj.Enabled
-                end
-                obj.Enabled = false
-            end
-        end
-    else
-        for obj, enabled in pairs(saved_effects) do
-            if obj and obj.Parent then
-                obj.Enabled = enabled
-            end
-        end
-        saved_effects = {}
-    end
-end
-
-function restore_original_clothes()
-    if jersey_connection then
-        jersey_connection:Disconnect()
-        jersey_connection = nil
-    end
-    
-    local character = LocalPlayer.Character
-    if character then
-        local shirt = character:FindFirstChildOfClass("Shirt")
-        local pants = character:FindFirstChildOfClass("Pants")
-        
-        if shirt then
-            if original_clothes.shirt and original_clothes.shirt ~= "" then
-                shirt.ShirtTemplate = original_clothes.shirt
-            else
-                shirt:Destroy()
-            end
-        end
-        
-        if pants then
-            if original_clothes.pants and original_clothes.pants ~= "" then
-                pants.PantsTemplate = original_clothes.pants
-            else
-                pants:Destroy()
-            end
-        end
-    end
-end
-
-function apply_tuxedo_jersey()
-    restore_original_clothes()
-    if not G.JerseyEnabled then return end
-    
-    G.JerseyAtomicEnabled = false
-    G.JerseyDragaoEnabled = false
-    G.JerseyPijamaEnabled = false
-    
-    apply_jersey()
-    
-    jersey_connection = RunService.Heartbeat:Connect(function()
-        if not G.JerseyEnabled then
-            restore_original_clothes()
-            return
-        end
-        apply_jersey()
-    end)
-end
-
--- =====================
--- JERSEY ATOMIC
--- =====================
-
-local JERSEY_ATOMIC_COLORS = {
-    PRETA = {Shirt = "rbxassetid://1234567890", Short = "rbxassetid://1234567890"},
-    LARANJA = {Shirt = "rbxassetid://1234567890", Short = "rbxassetid://1234567890"},
-    ROXO = {Shirt = "rbxassetid://1234567890", Short = "rbxassetid://1234567890"},
-    VERMELHO = {Shirt = "rbxassetid://1234567890", Short = "rbxassetid://1234567890"},
-    BRANCO = {Shirt = "rbxassetid://1234567890", Short = "rbxassetid://1234567890"}
-}
-
-function get_atomic_jersey(team)
-    return JERSEY_ATOMIC_COLORS[tostring(team)] or JERSEY_ATOMIC_COLORS.PRETA
-end
-
-local atomic_connection = nil
-
-function apply_atomic_jersey()
-    if atomic_connection then
-        atomic_connection:Disconnect()
-        atomic_connection = nil
-    end
-    
-    if not G.JerseyAtomicEnabled then return end
-    
-    local character = LocalPlayer.Character
-    if not character then return end
-    
-    local data = get_atomic_jersey(G.JerseyAtomicTeam)
-    local shirt_template, pants_template = data.Shirt, data.Short
-    
-    local shirt = character:FindFirstChildOfClass("Shirt")
-    local pants = character:FindFirstChildOfClass("Pants")
-    
-    for _, child in ipairs(character:GetChildren()) do
-        if child:IsA("Shirt") and child ~= shirt then
-            child:Destroy()
-        elseif child:IsA("Pants") and child ~= pants then
-            child:Destroy()
-        elseif child:IsA("ShirtGraphic") then
-            child:Destroy()
-        end
-    end
-    
-    if shirt then
-        shirt.Name = "ZYNEXAtomicShirt"
-        shirt.ShirtTemplate = shirt_template
-        if not pants then
-            pants = Instance.new("Pants")
-            pants.Name = "ZYNEXAtomicShort"
-            pants.Parent = character
-        end
-        pants.PantsTemplate = pants_template
-    else
-        local new_shirt = Instance.new("Shirt")
-        new_shirt.Name = "ZYNEXAtomicShirt"
-        new_shirt.Parent = character
-        new_shirt.ShirtTemplate = shirt_template
-        local new_pants = Instance.new("Pants")
-        new_pants.Name = "ZYNEXAtomicShort"
-        new_pants.Parent = character
-        new_pants.PantsTemplate = pants_template
-    end
-    
-    atomic_connection = RunService.Heartbeat:Connect(function()
-        if not G.JerseyAtomicEnabled then
-            restore_original_clothes()
-            return
-        end
-    end)
-    
-    task.spawn(function()
-        while G.JerseyAtomicEnabled do
-            pcall(apply_atomic_jersey)
-            task.wait(3)
-        end
-    end)
-end
-
--- =====================
--- JERSEY DRAGÃO
--- =====================
-
-local JERSEY_DRAGAO_COLORS = {
-    PRETA = {Shirt = "rbxassetid://1234567890", Short = "rbxassetid://1234567890"},
-    LARANJA = {Shirt = "rbxassetid://1234567890", Short = "rbxassetid://1234567890"},
-    ROXO = {Shirt = "rbxassetid://1234567890", Short = "rbxassetid://1234567890"},
-    VERMELHO = {Shirt = "rbxassetid://1234567890", Short = "rbxassetid://1234567890"},
-    BRANCO = {Shirt = "rbxassetid://1234567890", Short = "rbxassetid://1234567890"}
-}
-
-function get_dragao_jersey(team)
-    return JERSEY_DRAGAO_COLORS[tostring(team)] or JERSEY_DRAGAO_COLORS.PRETA
-end
-
-local dragao_connection = nil
-
-function apply_dragao_jersey()
-    local character = LocalPlayer.Character
-    if not character then return end
-    
-    local data = get_dragao_jersey(G.JerseyDragaoTeam)
-    local shirt_template, pants_template = data.Shirt, data.Short
-    
-    local shirt = character:FindFirstChildOfClass("Shirt")
-    local pants = character:FindFirstChildOfClass("Pants")
-    
-    if shirt then
-        shirt.ShirtTemplate = shirt_template
-        if not pants then
-            pants = Instance.new("Pants", character)
-        end
-        pants.PantsTemplate = pants_template
-    else
-        local new_shirt = Instance.new("Shirt", character)
-        new_shirt.ShirtTemplate = shirt_template
-    end
-end
-
--- =====================
--- JERSEY PIJAMA
--- =====================
-
-local JERSEY_PIJAMA_COLORS = {
-    PRETO = {Shirt = "rbxassetid://1234567890", Short = "rbxassetid://1234567890"},
-    ORANGE = {Shirt = "rbxassetid://1234567890", Short = "rbxassetid://1234567890"},
-    ROXO = {Shirt = "rbxassetid://1234567890", Short = "rbxassetid://1234567890"},
-    VERMELHO = {Shirt = "rbxassetid://1234567890", Short = "rbxassetid://1234567890"},
-    BRANCO = {Shirt = "rbxassetid://1234567890", Short = "rbxassetid://1234567890"}
-}
-
-function get_pijama_jersey(team)
-    local team_name = tostring(team)
-    if team_name == "PRETA" then team_name = "PRETO" end
-    return JERSEY_PIJAMA_COLORS[team_name] or JERSEY_PIJAMA_COLORS.PRETO
-end
-
-local pijama_connection = nil
-
-function apply_pijama_jersey()
-    local character = LocalPlayer.Character
-    if not character then return end
-    
-    local data = get_pijama_jersey(G.JerseyPijamaTeam)
-    local shirt_template, pants_template = data.Shirt, data.Short
-    
-    local shirt = character:FindFirstChildOfClass("Shirt")
-    local pants = character:FindFirstChildOfClass("Pants")
-    
-    if shirt then
-        shirt.ShirtTemplate = shirt_template
-        if not pants then
-            pants = Instance.new("Pants", character)
-        end
-        pants.PantsTemplate = pants_template
-    else
-        local new_shirt = Instance.new("Shirt", character)
-        new_shirt.ShirtTemplate = shirt_template
-    end
-end
-
--- =====================
--- HITBOX SYSTEM
--- =====================
-
-function clear_hitboxes()
+local function clear_hitboxes()
     for _, obj in ipairs(Workspace:GetChildren()) do
-        if obj.Name and obj.Name:match("^CLIENT_BALL_") then
-            local ball = obj:FindFirstChild("Ball.001")
-            if ball then
-                ball:Destroy()
-            end
+        if obj:IsA("Model") and obj.Name:match("^CLIENT_BALL_") then
+            local b = obj:FindFirstChild("Ball.001")
+            if b then b:Destroy() end
         end
     end
 end
 
-function update_hitboxes()
-    if G.HitboxEnabled then
-        for _, obj in ipairs(Workspace:GetChildren()) do
-            if obj.Name and obj.Name:match("^CLIENT_BALL_") then
-                local ball = obj:FindFirstChild("Ball.001")
-                if not ball then
-                    ball = Instance.new("Part")
-                    ball.Name = "Ball.001"
-                    ball.Parent = obj
+RunService.RenderStepped:Connect(function()
+    if not G.HitboxEnabled then return end
+    for _, model in ipairs(Workspace:GetChildren()) do
+        if model:IsA("Model") and model.Name:match("^CLIENT_BALL_%d+$") then
+            local ball = model:FindFirstChild("Ball.001")
+            if not ball then
+                local ref
+                for _, p in ipairs(model:GetDescendants()) do if p:IsA("BasePart") then ref=p; break end end
+                if ref then
+                    ball = Instance.new("Part", model)
+                    ball.Name = "Ball.001"; ball.Shape = Enum.PartType.Ball
+                    ball.Anchored = true; ball.CanCollide = false
+                    ball.Material = Enum.Material.ForceField
                 end
-                ball.Shape = Enum.PartType.Ball
-                ball.Anchored = true
-                ball.CanCollide = false
-                ball.Material = Enum.Material.ForceField
+            end
+            if ball then
+                ball.Size = Vector3.new(2,2,2)*G.HitboxSize
                 ball.Transparency = G.HitboxTransparency
-                ball.Size = Vector3.new(2, 2, 2) * G.HitboxSize
                 ball.Color = G.ThemeColor
-                ball.CFrame = obj.CFrame
+                local ref
+                for _, p in ipairs(model:GetDescendants()) do
+                    if p:IsA("BasePart") and p.Name ~= "Ball.001" then ref=p; break end
+                end
+                if ref then ball.CFrame = ref.CFrame end
             end
         end
     end
-end
+end)
 
 -- =====================
--- ESP SYSTEM
+-- ESP
 -- =====================
 
 local esp_lines = {}
-
-function update_esp()
+RunService.Heartbeat:Connect(function()
     if G.ESPEnabled then
         for _, player in ipairs(Players:GetPlayers()) do
             if player ~= LocalPlayer and player.Character then
-                local head = player.Character:FindFirstChild("Head")
                 local root = player.Character:FindFirstChild("HumanoidRootPart")
-                
-                if head and root then
+                if root then
                     if not esp_lines[player] or not esp_lines[player].Parent then
-                        local line = Instance.new("Part")
-                        line.Name = "ZYNEXESPLine"
-                        line.Anchored = true
-                        line.CanCollide = false
-                        line.CanTouch = false
-                        line.CastShadow = false
-                        line.Material = Enum.Material.SmoothPlastic
-                        line.Shape = Enum.PartType.Cylinder
-                        line.Parent = Workspace
-                        esp_lines[player] = line
+                        local ln = Instance.new("Part")
+                        ln.Name="ZYNEXESPLine"; ln.Anchored=true; ln.CanCollide=false
+                        ln.CanTouch=false; ln.CastShadow=false; ln.Shape=Enum.PartType.Cylinder
+                        ln.Parent=Workspace; esp_lines[player]=ln
                     end
-                    
-                    local line = esp_lines[player]
-                    local look = Vector3.new(root.CFrame.LookVector.X, 0, root.CFrame.LookVector.Z)
-                    local dir = look.Unit
-                    local pos = root.Position + Vector3.new(0, 1.6, 0) + dir * 0.65
-                    
-                    line.Material = G.ESPNeon and Enum.Material.Neon or Enum.Material.SmoothPlastic
-                    line.Color = G.ThemeColor
-                    line.Size = Vector3.new(G.ESPLineSize, 0.35, 0.35)
-                    line.CFrame = CFrame.lookAt(pos + dir * G.ESPLineSize / 2, pos + dir * G.ESPLineSize) * CFrame.Angles(0, math.rad(90), 0)
+                    local ln=esp_lines[player]
+                    local lv=root.CFrame.LookVector
+                    local dir=Vector3.new(lv.X,0,lv.Z)
+                    if dir.Magnitude>0 then dir=dir.Unit end
+                    local pos=root.Position+Vector3.new(0,1.6,0)+dir*0.65
+                    ln.Material=G.ESPNeon and Enum.Material.Neon or Enum.Material.SmoothPlastic
+                    ln.Color=G.ThemeColor; ln.Size=Vector3.new(G.ESPLineSize,0.35,0.35)
+                    ln.CFrame=CFrame.lookAt(pos+dir*G.ESPLineSize/2,pos+dir*G.ESPLineSize)*CFrame.Angles(0,math.rad(90),0)
                 end
             end
         end
     else
-        for player, line in pairs(esp_lines) do
-            if line then line:Destroy() end
-            esp_lines[player] = nil
-        end
+        for p,ln in pairs(esp_lines) do if ln then pcall(function()ln:Destroy()end) end; esp_lines[p]=nil end
     end
+end)
+
+-- =====================
+-- FREEZE
+-- =====================
+
+local is_frozen = false
+local function set_freeze(state)
+    is_frozen = state
+    local c = LocalPlayer.Character
+    if c then local r=c:FindFirstChild("HumanoidRootPart"); if r then r.Anchored=state end end
 end
 
 -- =====================
--- AUTO LONG SYSTEM
+-- LEED FEAT
 -- =====================
 
-local is_auto_long_active = false
-local auto_long_connection = nil
+local leed_active = false
+local function do_leed_feat()
+    local c=LocalPlayer.Character; if not c then return end
+    local h=c:FindFirstChildOfClass("Humanoid"); local r=c:FindFirstChild("HumanoidRootPart")
+    if not h or not r then return end
+    r.Anchored=false
+    r.AssemblyLinearVelocity=Vector3.new(r.AssemblyLinearVelocity.X,-260,r.AssemblyLinearVelocity.Z)
+    if leed_active then return end; leed_active=true
+    task.spawn(function()
+        local t=tick()
+        while c.Parent and h.FloorMaterial==Enum.Material.Air and tick()-t<=2.5 do task.wait(0.03) end
+        leed_active=false
+    end)
+end
 
-function start_auto_long()
-    if not G.AutoLong then return end
-    
-    local character = LocalPlayer.Character
-    if not character then return end
-    
-    local root_part = character:FindFirstChild("HumanoidRootPart")
-    local lower_torso = character:FindFirstChild("LowerTorso")
-    if not lower_torso then return end
-    local root_joint = lower_torso:FindFirstChild("Root")
-    
-    if not root_part or not root_joint then return end
-    
-    if is_auto_long_active then return end
-    is_auto_long_active = true
-    
-    local current_yaw = Camera.CFrame:ToEulerAnglesYXZ()
-    local target_yaw = current_yaw + (G.AutoLongDir == "DIREITA" and -1 or 1) * math.rad(math.clamp(G.AutoLongAngle, 0, 30))
-    local current_angle = current_yaw
-    local original_c0 = root_joint.C0
-    
-    if auto_long_connection then
-        auto_long_connection:Disconnect()
-        auto_long_connection = nil
-    end
-    
-    auto_long_connection = RunService.RenderStepped:Connect(function(delta)
-        if not is_auto_long_active then
-            if auto_long_connection then
-                auto_long_connection:Disconnect()
-                auto_long_connection = nil
-            end
-            return
-        end
-        
-        current_angle = current_angle + (target_yaw - current_angle) * math.min(1, 7 * delta)
-        
-        local _, yaw, pitch = Camera.CFrame:ToEulerAnglesYXZ()
-        Camera.CFrame = CFrame.new(Camera.CFrame.Position) * CFrame.fromEulerAnglesYXZ(yaw, current_angle, pitch)
-        
-        local look = Camera.CFrame.LookVector
-        local dir = Vector3.new(-look.X, 0, -look.Z)
-        if dir.Magnitude < 0.01 then return end
-        dir = dir.Unit
-        
+-- =====================
+-- AUTO LONG
+-- =====================
+
+local al_active=false; local al_conn=nil
+local function stop_auto_long()
+    al_active=false
+    if al_conn then pcall(function()RunService:UnbindFromRenderStep("DRACOAutoLong")end); al_conn=nil end
+    local c=LocalPlayer.Character
+    if c then local lt=c:FindFirstChild("LowerTorso"); if lt then local rj=lt:FindFirstChild("Root"); if rj then pcall(function()rj.C0=CFrame.new(rj.C0.Position)end)end end end
+end
+local function start_auto_long()
+    stop_auto_long()
+    local c=LocalPlayer.Character; if not c then return end
+    local rp=c:FindFirstChild("HumanoidRootPart")
+    local lt=c:FindFirstChild("LowerTorso"); if not lt then return end
+    local rj=lt:FindFirstChild("Root"); if not rp or not rj then return end
+    al_active=true; local oc0=rj.C0
+    local ao=(G.AutoLongDir=="DIREITA" and -1 or 1)*math.rad(math.clamp(G.AutoLongAngle,0,30))
+    al_conn=true
+    RunService:BindToRenderStep("DRACOAutoLong",Enum.RenderPriority.Camera.Value+1,function()
+        if not al_active then pcall(function()RunService:UnbindFromRenderStep("DRACOAutoLong")end); al_conn=nil; return end
         pcall(function()
-            local forward = root_part.CFrame.LookVector
-            local dot = forward:Dot(dir)
-            if dot > 0 then dot = dot * 2 end
-            
-            local new_c0 = original_c0:Lerp(original_c0 * CFrame.Angles(math.rad(-dot * 25), 0, math.rad(-dot * 25)), math.min(1, delta * 15))
-            root_joint.C0 = new_c0
+            local cl=Camera.CFrame.LookVector
+            local fl=Vector3.new(cl.X,0,cl.Z)
+            if fl.Magnitude<0.01 then return end; fl=fl.Unit
+            local dot=rp.CFrame.LookVector:Dot(fl)
+            rj.C0=oc0*CFrame.Angles(math.rad(-dot*20),0,math.clamp(ao*1.5,-math.rad(30),math.rad(30)))
         end)
     end)
 end
 
-function stop_auto_long()
-    is_auto_long_active = false
-    
-    if auto_long_connection then
-        auto_long_connection:Disconnect()
-        auto_long_connection = nil
-    end
-    
-    local character = LocalPlayer.Character
-    if character then
-        local lower_torso = character:FindFirstChild("LowerTorso")
-        if lower_torso then
-            local root_joint = lower_torso:FindFirstChild("Root")
-            if root_joint then
-                pcall(function()
-                    root_joint.C0 = CFrame.new(root_joint.C0.Position) * CFrame.fromEulerAnglesYXZ(0, 0, 0)
-                end)
-            end
-        end
-    end
-end
-
-function toggle_auto_long()
-    G.AutoLong = not G.AutoLong
-    if not G.AutoLong then
-        stop_auto_long()
-    else
-        start_auto_long()
-    end
-end
-
 -- =====================
--- LEED FEAT SYSTEM
+-- EFEITOS VISUAIS
 -- =====================
 
-local leed_feat_active = false
-
-function apply_leed_feat()
-    if not G.LeedFeat then return end
-    
-    local character = LocalPlayer.Character
-    if not character then return end
-    
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
-    local root = character:FindFirstChild("HumanoidRootPart")
-    if not humanoid or not root then return end
-    
-    root.Anchored = false
-    root.AssemblyLinearVelocity = Vector3.new(root.AssemblyLinearVelocity.X, -260, root.AssemblyLinearVelocity.Z)
-    
-    if leed_feat_active then return end
-    leed_feat_active = true
-    
-    task.spawn(function()
-        local start_time = tick()
-        while character.Parent and humanoid.FloorMaterial == Enum.Material.Air and tick() - start_time <= 2.5 do
-            task.wait(0.03)
-        end
-        leed_feat_active = false
-    end)
-end
-
-function create_leed_feat_effect(position)
-    local part = Instance.new("Part")
-    part.Name = "ZYNEXLeedFeatPurpleEffect"
-    part.Anchored = true
-    part.CanCollide = false
-    part.CanTouch = false
-    part.CanQuery = false
-    part.CastShadow = false
-    part.Shape = Enum.PartType.Cylinder
-    part.Material = Enum.Material.Neon
-    part.Color = Color3.fromRGB(170, 0, 255)
-    part.Transparency = 0.15
-    part.Size = Vector3.new(0.18, 0.25, 0.25)
-    part.CFrame = CFrame.new(position) * CFrame.Angles(0, 0, math.rad(90))
-    part.Parent = Workspace
-    
-    local tween = TweenService:Create(part, TweenInfo.new(0.45, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-        Size = Vector3.new(0.18, 8, 8),
-        Transparency = 1
-    })
-    tween:Play()
-    tween.Completed:Connect(function()
-        part:Destroy()
-    end)
-end
-
--- =====================
--- CROSSHAIR SYSTEM
--- =====================
-
-local crosshair_parts = {}
-local crosshair_frame = nil
-local crosshair_container = nil
-
-function create_crosshair_part(name, position, size, rotation)
-    local frame = Instance.new("Frame")
-    frame.Name = name
-    frame.Position = position
-    frame.Size = size
-    frame.Rotation = rotation or 0
-    frame.AnchorPoint = Vector2.new(0.5, 0.5)
-    frame.BackgroundColor3 = G.ThemeColor
-    frame.BorderSizePixel = 0
-    frame.ZIndex = 1001
-    frame.Parent = crosshair_container
-    Instance.new("UICorner", frame).CornerRadius = UDim.new(1, 0)
-    return frame
-end
-
-function update_crosshair()
-    if not crosshair_frame or not crosshair_container then return end
-    
-    crosshair_frame.Visible = G.CrosshairEnabled == true
-    crosshair_frame.Position = UDim2.new(0.5, 0, math.clamp(tonumber(G.CrosshairY) or 50, 0, 50) / 100, 0)
-    
-    for _, child in ipairs(crosshair_container:GetChildren()) do
-        child:Destroy()
-    end
-    
-    if not G.CrosshairEnabled then return end
-    
-    local style = tostring(G.CrosshairStyle or "CRUZ")
-    
-    if style == "PONTO" then
-        local dot = Instance.new("Frame")
-        dot.Name = "Dot"
-        dot.AnchorPoint = Vector2.new(0.5, 0.5)
-        dot.Position = UDim2.new(0.5, 0, 0.5, 0)
-        dot.Size = UDim2.new(0, 7, 0, 7)
-        dot.BackgroundColor3 = G.ThemeColor
-        dot.BorderSizePixel = 0
-        dot.ZIndex = 1001
-        dot.Parent = crosshair_container
-        Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
-        
-    elseif style == "CIRCULO" then
-        local circle = Instance.new("Frame")
-        circle.Name = "Circle"
-        circle.AnchorPoint = Vector2.new(0.5, 0.5)
-        circle.Position = UDim2.new(0.5, 0, 0.5, 0)
-        circle.Size = UDim2.new(0, 28, 0, 28)
-        circle.BackgroundTransparency = 1
-        circle.BorderSizePixel = 0
-        circle.ZIndex = 1001
-        circle.Parent = crosshair_container
-        Instance.new("UICorner", circle).CornerRadius = UDim.new(1, 0)
-        
-        local stroke = Instance.new("UIStroke")
-        stroke.Color = G.ThemeColor
-        stroke.Thickness = 2
-        stroke.Transparency = 0.05
-        stroke.Parent = circle
-        
-        create_crosshair_part("CircleDot", UDim2.new(0.5, 0, 0.5, 0), UDim2.new(0, 4, 0, 4), 0)
-        
-    elseif style == "X" then
-        create_crosshair_part("X1", UDim2.new(0.5, 0, 0.5, 0), UDim2.new(0, 34, 0, 3), 45)
-        create_crosshair_part("X2", UDim2.new(0.5, 0, 0.5, 0), UDim2.new(0, 34, 0, 3), -45)
-        
-    else -- CRUZ
-        create_crosshair_part("Top", UDim2.new(0.5, 0, 0.18, 0), UDim2.new(0, 3, 0, 13), 0)
-        create_crosshair_part("Bottom", UDim2.new(0.5, 0, 0.82, 0), UDim2.new(0, 3, 0, 13), 0)
-        create_crosshair_part("Left", UDim2.new(0.18, 0, 0.5, 0), UDim2.new(0, 13, 0, 3), 0)
-        create_crosshair_part("Right", UDim2.new(0.82, 0, 0.5, 0), UDim2.new(0, 13, 0, 3), 0)
-        create_crosshair_part("Center", UDim2.new(0.5, 0, 0.5, 0), UDim2.new(0, 4, 0, 4), 0)
-    end
-end
-
--- =====================
--- RAINBOW TAG SYSTEM
--- =====================
-
-local rainbow_hue = 0
-local rainbow_connection = nil
-
-function find_name_tag(character)
-    local targets = {"Head", "UpperTorso", "Torso"}
-    for _, part_name in ipairs(targets) do
-        local part = character:FindFirstChild(part_name)
-        if part then
-            for _, child in ipairs(part:GetChildren()) do
-                if child:IsA("BillboardGui") then
-                    for _, descendant in ipairs(child:GetDescendants()) do
-                        if descendant:IsA("TextLabel") or descendant:IsA("TextButton") then
-                            local name = descendant.Name:lower()
-                            if name:find("name") or name:find("tag") or name:find("title") or name:find("text") then
-                                return descendant
-                            end
-                        end
-                    end
-                    for _, descendant in ipairs(child:GetDescendants()) do
-                        if descendant:IsA("TextLabel") then
-                            return descendant
-                        end
-                    end
+local orig_lt={ClockTime=Lighting.ClockTime,Brightness=Lighting.Brightness,Ambient=Lighting.Ambient,OutdoorAmbient=Lighting.OutdoorAmbient,FogEnd=Lighting.FogEnd}
+local saved_parts={}; local saved_effects={}
+local function apply_visuals()
+    if G.NightMode then Lighting.ClockTime=0; Lighting.Brightness=1; Lighting.Ambient=Color3.fromRGB(45,45,60); Lighting.OutdoorAmbient=Color3.fromRGB(30,30,45)
+    else Lighting.ClockTime=orig_lt.ClockTime; Lighting.Brightness=orig_lt.Brightness; Lighting.Ambient=orig_lt.Ambient; Lighting.OutdoorAmbient=orig_lt.OutdoorAmbient end
+    Lighting.GlobalShadows=not(G.NoShadows or G.FPSBoost); Lighting.FogEnd=G.FPSBoost and 100000 or orig_lt.FogEnd
+    if G.GrayFloor then
+        for _,p in ipairs(Workspace:GetDescendants()) do
+            if p:IsA("BasePart") and p.Anchored then local n=p.Name:lower()
+                if n:find("floor") or n:find("ground") or n:find("baseplate") or n:find("chao") then
+                    if not saved_parts[p] then saved_parts[p]={Color=p.Color,Material=p.Material} end
+                    p.Color=Color3.fromRGB(95,95,95); p.Material=Enum.Material.SmoothPlastic
                 end
             end
         end
-    end
-    return nil
-end
-
-function update_rainbow_tag()
-    if rainbow_connection then
-        rainbow_connection:Disconnect()
-        rainbow_connection = nil
-    end
-    
-    if not G.RainbowTag then return end
-    
-    rainbow_connection = RunService.RenderStepped:Connect(function()
-        local character = LocalPlayer.Character
-        if not character then return end
-        
-        local tag = find_name_tag(character)
-        if not tag then return end
-        
-        local display_name = G.CustomTagName ~= "" and G.CustomTagName or LocalPlayer.DisplayName
-        if tag.Text ~= display_name then
-            tag.Text = display_name
+    else for p,d in pairs(saved_parts) do if p and p.Parent then p.Color=d.Color; p.Material=d.Material end end; saved_parts={} end
+    if G.FPSBoost then
+        for _,o in ipairs(Workspace:GetDescendants()) do
+            if o:IsA("ParticleEmitter") or o:IsA("Trail") or o:IsA("Beam") then
+                if saved_effects[o]==nil then saved_effects[o]=o.Enabled end; o.Enabled=false
+            end
         end
-        
-        rainbow_hue = (rainbow_hue + 0.5) % 360
-        tag.TextColor3 = Color3.fromHSV(rainbow_hue / 360, 1, 1)
-        tag.TextStrokeTransparency = 0.5
-        tag.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-        tag.RichText = false
-    end)
+    else for o,e in pairs(saved_effects) do if o and o.Parent then o.Enabled=e end end; saved_effects={} end
 end
 
 -- =====================
--- FREEZE AIR SYSTEM
+-- AUTO SPIN
 -- =====================
 
-local is_frozen = false
-
-function toggle_freeze()
-    if not G.FreezeAir then return end
-    
-    local character = LocalPlayer.Character
-    if not character then return end
-    
-    local root = character:FindFirstChild("HumanoidRootPart")
-    if not root then return end
-    
-    is_frozen = not is_frozen
-    root.Anchored = is_frozen
-end
-
--- =====================
--- AUTO SPIN SYSTEM
--- =====================
-
--- Reivindica recompensas automáticas
 task.spawn(function()
     while task.wait(0.5) do
         if G.AutoSpinStyle or G.AutoSpinHabi or G.AutoYen then
             pcall(function()
-                local rewards = {}
-                if G.AutoSpinStyle then table.insert(rewards, 1) end
-                if G.AutoSpinHabi then table.insert(rewards, 4) end
-                if G.AutoYen then table.insert(rewards, 2) end
-                
-                local packages = ReplicatedStorage:FindFirstChild("Packages")
-                if packages then
-                    local index = packages:FindFirstChild("_Index")
-                    if index then
-                        local knit = index:FindFirstChild("sleitnick_knit@1.7.0")
-                        if knit then
-                            local services = knit:FindFirstChild("knit"):FindFirstChild("Services")
-                            if services then
-                                local season = services:FindFirstChild("SeasonService")
-                                if season then
-                                    local rf = season:FindFirstChild("RF")
-                                    if rf then
-                                        local request = rf:FindFirstChild("RequestRankedReward")
-                                        if request then
-                                            for _, reward_id in ipairs(rewards) do
-                                                request:InvokeServer(reward_id)
-                                            end
-                                        end
-                                    end
-                                end
-                            end
-                        end
-                    end
-                end
+                local rewards={}
+                if G.AutoSpinStyle then table.insert(rewards,1) end
+                if G.AutoSpinHabi  then table.insert(rewards,4) end
+                if G.AutoYen       then table.insert(rewards,2) end
+                local pkg=ReplicatedStorage:FindFirstChild("Packages"); if not pkg then return end
+                local idx=pkg:FindFirstChild("_Index"); if not idx then return end
+                local knit=idx:FindFirstChild("sleitnick_knit@1.7.0"); if not knit then return end
+                local kmod=knit:FindFirstChild("knit"); if not kmod then return end
+                local svcs=kmod:FindFirstChild("Services"); if not svcs then return end
+                local ss=svcs:FindFirstChild("SeasonService"); if not ss then return end
+                local rf=ss:FindFirstChild("RF"); if not rf then return end
+                local req=rf:FindFirstChild("RequestRankedReward"); if not req then return end
+                for _,id in ipairs(rewards) do req:InvokeServer(id) end
             end)
         end
     end
 end)
 
 -- =====================
--- CAMERA JUMP SYSTEM
+-- CAMERA JUMP
 -- =====================
 
-UserInputService.InputBegan:Connect(function(input)
-    if G.CameraJump then
-        local character = LocalPlayer.Character
-        if character then
-            local humanoid = character:FindFirstChild("Humanoid")
-            local root = character:FindFirstChild("HumanoidRootPart")
-            
-            if humanoid and root and input.KeyCode == Enum.KeyCode.Space then
-                task.defer(function()
-                    task.wait(0.03)
-                    local dir = Vector3.new(Camera.CFrame.LookVector.X, 0, Camera.CFrame.LookVector.Z)
-                    if dir.Magnitude > 0 then
-                        root.CFrame = CFrame.lookAt(root.Position, root.Position + dir.Unit)
-                        humanoid.AutoRotate = false
-                    end
-                end)
-            end
-        end
+UserInputService.InputBegan:Connect(function(input,gp)
+    if gp then return end
+    if G.CameraJump and input.KeyCode==Enum.KeyCode.Space then
+        local c=LocalPlayer.Character; if not c then return end
+        local h=c:FindFirstChild("Humanoid"); local r=c:FindFirstChild("HumanoidRootPart")
+        if h and r then task.defer(function() task.wait(0.03); local dir=Vector3.new(Camera.CFrame.LookVector.X,0,Camera.CFrame.LookVector.Z); if dir.Magnitude>0 then r.CFrame=CFrame.lookAt(r.Position,r.Position+dir.Unit); h.AutoRotate=false end end) end
     end
 end)
 
 -- =====================
--- NOTIFICAÇÕES
+-- JERSEYS
 -- =====================
 
-local notification_container = nil
+local original_clothes={}; local active_jersey=nil; local jersey_conn=nil
 
-function show_notification(text)
-    if not notification_container then return end
-    
-    local frame = Instance.new("Frame")
-    frame.Name = "NotifFrame"
-    frame.Size = UDim2.new(0, 300, 0, 60)
-    frame.Position = UDim2.new(0.5, -150, 0, -80)
-    frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-    frame.BorderSizePixel = 0
-    frame.Parent = notification_container
-    
-    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
-    
-    local stroke = Instance.new("UIStroke")
-    stroke.Color = G.ThemeColor
-    stroke.Thickness = 2
-    stroke.Parent = frame
-    
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, -20, 1, 0)
-    label.Position = UDim2.new(0, 10, 0, 0)
-    label.BackgroundTransparency = 1
-    label.Text = text
-    label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    label.TextSize = 14
-    label.Font = Enum.Font.Gotham
-    label.Parent = frame
-    
-    local tween_in = TweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-        Position = UDim2.new(0.5, -150, 0, 20)
-    })
-    tween_in:Play()
-    
-    task.wait(3)
-    
-    local tween_out = TweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
-        Position = UDim2.new(0.5, -150, 0, -80)
-    })
-    tween_out:Play()
-    tween_out.Completed:Wait()
-    frame:Destroy()
+local JERSEY_TUXEDO={
+    PRETA={Shirt="rbxassetid://118132190175545",Pants="rbxassetid://110200199953723"},
+    LARANJA={Shirt="rbxassetid://86344308385192",Pants="rbxassetid://128599368986740"},
+    ROXO={Shirt="rbxassetid://70403569023919",Pants="rbxassetid://100135147407319"},
+    VERMELHA={Shirt="rbxassetid://117446934835886",Pants="rbxassetid://82230977528428"},
+    BRANCA={Shirt="rbxassetid://113388156554953",Pants="rbxassetid://99618919969542"},
+}
+local JERSEY_DRAGAO={
+    PRETA={Shirt="rbxassetid://104102200186439",Pants="rbxassetid://96110031810524"},
+    LARANJA={Shirt="rbxassetid://132973270253302",Pants="rbxassetid://85172161335350"},
+    ROXO={Shirt="rbxassetid://116808129640162",Pants="rbxassetid://139666428760490"},
+    VERMELHA={Shirt="rbxassetid://80954367566093",Pants="rbxassetid://123817816516456"},
+    BRANCA={Shirt="rbxassetid://111076753133496",Pants="rbxassetid://118418667305258"},
+}
+local JERSEY_PIJAMA={
+    PRETA={Shirt="rbxassetid://73515737995241",Pants="rbxassetid://115411367769806"},
+    LARANJA={Shirt="rbxassetid://73515737995241",Pants="rbxassetid://98261789486915"},
+    ROXO={Shirt="rbxassetid://73515737995241",Pants="rbxassetid://84134229912519"},
+    VERMELHA={Shirt="rbxassetid://73515737995241",Pants="rbxassetid://81837535879996"},
+    BRANCA={Shirt="rbxassetid://73515737995241",Pants="rbxassetid://118575272229757"},
+}
+local JERSEY_CLASSIC={
+    PRETA={Shirt="rbxassetid://112368798136022",Pants="rbxassetid://124438632183908"},
+    LARANJA={Shirt="rbxassetid://79602504375071",Pants="rbxassetid://103369184802793"},
+    ROXO={Shirt="rbxassetid://123441617925044",Pants="rbxassetid://103369184802793"},
+    VERMELHA={Shirt="rbxassetid://79600316188348",Pants="rbxassetid://116577177642214"},
+    BRANCA={Shirt="rbxassetid://116096773053478",Pants="rbxassetid://83350533401346"},
+}
+local JERSEY_SPARKLE={
+    PRETA={Shirt="rbxassetid://79419126444394",Pants="rbxassetid://123015621765016"},
+    LARANJA={Shirt="rbxassetid://90814817391229",Pants="rbxassetid://78131972193601"},
+    ROXO={Shirt="rbxassetid://119109444404595",Pants="rbxassetid://137727739269710"},
+    VERMELHA={Shirt="rbxassetid://88492680333870",Pants="rbxassetid://122028137354835"},
+    BRANCA={Shirt="rbxassetid://101878166391387",Pants="rbxassetid://98723112188566"},
+}
+
+local function save_clothes()
+    local c=LocalPlayer.Character; if not c then return end
+    local s=c:FindFirstChildOfClass("Shirt"); local p=c:FindFirstChildOfClass("Pants")
+    if not original_clothes.shirt then original_clothes.shirt=s and s.ShirtTemplate or "" end
+    if not original_clothes.pants then original_clothes.pants=p and p.PantsTemplate or "" end
+end
+local function apply_clothes(sid,pid)
+    local c=LocalPlayer.Character; if not c then return end
+    save_clothes()
+    local s=c:FindFirstChildOfClass("Shirt"); local p=c:FindFirstChildOfClass("Pants")
+    if not s then s=Instance.new("Shirt");s.Parent=c end
+    if not p then p=Instance.new("Pants");p.Parent=c end
+    s.ShirtTemplate=sid; p.PantsTemplate=pid
+end
+local function restore_clothes()
+    if jersey_conn then jersey_conn:Disconnect(); jersey_conn=nil end
+    active_jersey=nil
+    local c=LocalPlayer.Character; if not c then return end
+    local s=c:FindFirstChildOfClass("Shirt"); local p=c:FindFirstChildOfClass("Pants")
+    if s then if original_clothes.shirt~="" then s.ShirtTemplate=original_clothes.shirt else s:Destroy() end end
+    if p then if original_clothes.pants~="" then p.PantsTemplate=original_clothes.pants else p:Destroy() end end
+    original_clothes={}
+end
+local function start_jersey(sid,pid,name)
+    restore_clothes(); active_jersey=name; apply_clothes(sid,pid)
+    jersey_conn=RunService.Heartbeat:Connect(function()
+        if active_jersey~=name then return end
+        local c=LocalPlayer.Character; if not c then return end
+        local s=c:FindFirstChildOfClass("Shirt")
+        if s and s.ShirtTemplate~=sid then apply_clothes(sid,pid) end
+    end)
 end
 
 -- =====================
--- INICIALIZAÇÃO
+-- TECLAS DE ATALHO
 -- =====================
 
--- Carregar configuração
-local config_loaded = apply_config(load_config())
-
--- Iniciar conexões automáticas
-LocalPlayer.CharacterAdded:Connect(function()
-    task.wait(1)
-    apply_tuxedo_jersey()
+UserInputService.InputBegan:Connect(function(input,gp)
+    if gp then return end
+    if input.KeyCode==Enum.KeyCode.F and G.FreezeAir then set_freeze(not is_frozen) end
+    if input.KeyCode==Enum.KeyCode.G and G.LeedFeat then do_leed_feat() end
+    if input.KeyCode==Enum.KeyCode.L then
+        G.AutoLong=not G.AutoLong
+        if G.AutoLong then start_auto_long() else stop_auto_long() end
+    end
 end)
 
--- Atualizações em loop
-RunService.Heartbeat:Connect(function()
-    update_hitboxes()
-    update_esp()
-end)
-
-print("[ZYNEX] Carregado com sucesso!")
-show_notification("ZYNEX CARREGADO!")
-
 -- =====================
--- GUI PRINCIPAL
+-- ORION LIBRARY
 -- =====================
 
-local gui_parent
-if typeof(gethui) == "function" then
-    gui_parent = gethui()
-else
-    local ok, cg = pcall(game.GetService, game, "CoreGui")
-    gui_parent = (ok and cg) or LocalPlayer:WaitForChild("PlayerGui")
+local OrionLib
+for _, url in ipairs({
+    "https://raw.githubusercontent.com/jensonhirst/Orion/main/source",
+    "https://raw.githubusercontent.com/High1000/Orion-Roblox-UI/main/source",
+}) do
+    local ok, res = pcall(function() return loadstring(game:HttpGet(url))() end)
+    if ok and res then OrionLib = res; break end
+end
+assert(OrionLib, "[DRACO] Falha ao carregar Orion Library")
+
+local Window = OrionLib:MakeWindow({
+    Name         = "DRACO",
+    HidePremium  = true,
+    SaveConfig   = false,
+    IntroEnabled = true,
+    IntroText    = "DRACO",
+})
+
+-- ======== ABA COMBATE ========
+local TabCombate = Window:MakeTab({ Name = "Combate", Icon = "rbxassetid://4483345998" })
+
+TabCombate:AddSection({ Name = "Hitbox" })
+TabCombate:AddToggle({ Name = "Hitbox", Default = false, Callback = function(v) G.HitboxEnabled=v; if not v then clear_hitboxes() end end })
+TabCombate:AddSlider({ Name = "Tamanho da Hitbox", Min=1, Max=100, Default=1, Increment=1, ValueName="x", Callback = function(v) G.HitboxSize=v end })
+TabCombate:AddSlider({ Name = "Transparencia Hitbox", Min=0, Max=9, Default=3, Increment=1, ValueName="/10", Callback = function(v) G.HitboxTransparency=v/10 end })
+
+TabCombate:AddSection({ Name = "Freeze Air" })
+TabCombate:AddToggle({ Name = "Freeze Air", Default = false, Callback = function(v) G.FreezeAir=v; if not v then set_freeze(false) end end })
+TabCombate:AddButton({ Name = "Toggle Freeze [F]", Callback = function() if G.FreezeAir then set_freeze(not is_frozen) end end })
+
+TabCombate:AddSection({ Name = "Leed Feat" })
+TabCombate:AddToggle({ Name = "Leed Feat [G]", Default = false, Callback = function(v) G.LeedFeat=v end })
+TabCombate:AddButton({ Name = "Aplicar Leed Feat", Callback = function() do_leed_feat() end })
+
+TabCombate:AddSection({ Name = "Auto Long" })
+TabCombate:AddToggle({ Name = "Auto Long", Default = false, Callback = function(v) G.AutoLong=v; if v then start_auto_long() else stop_auto_long() end end })
+TabCombate:AddSlider({ Name = "Angulo Auto Long", Min=1, Max=30, Default=15, Increment=1, ValueName=" graus", Callback = function(v) G.AutoLongAngle=v; if G.AutoLong then stop_auto_long(); start_auto_long() end end })
+TabCombate:AddDropdown({ Name = "Direcao Auto Long", Default="DIREITA", Options={"DIREITA","ESQUERDA"}, Callback = function(v) G.AutoLongDir=v; if G.AutoLong then stop_auto_long(); start_auto_long() end end })
+
+TabCombate:AddSection({ Name = "Camera Jump" })
+TabCombate:AddToggle({ Name = "Camera Jump [Espaco]", Default = false, Callback = function(v) G.CameraJump=v end })
+
+-- ======== ABA VISUAL ========
+local TabVisual = Window:MakeTab({ Name = "Visual", Icon = "rbxassetid://4483345998" })
+
+TabVisual:AddSection({ Name = "ESP" })
+TabVisual:AddToggle({ Name = "ESP", Default = false, Callback = function(v) G.ESPEnabled=v end })
+TabVisual:AddToggle({ Name = "ESP Neon", Default = false, Callback = function(v) G.ESPNeon=v end })
+TabVisual:AddSlider({ Name = "Tamanho ESP", Min=1, Max=30, Default=10, Increment=1, ValueName="", Callback = function(v) G.ESPLineSize=v end })
+
+TabVisual:AddSection({ Name = "Efeitos" })
+TabVisual:AddToggle({ Name = "FPS Boost",    Default = false, Callback = function(v) G.FPSBoost=v; apply_visuals() end })
+TabVisual:AddToggle({ Name = "Modo Noturno", Default = false, Callback = function(v) G.NightMode=v; apply_visuals() end })
+TabVisual:AddToggle({ Name = "Chao Cinza",   Default = false, Callback = function(v) G.GrayFloor=v; apply_visuals() end })
+TabVisual:AddToggle({ Name = "Sem Sombras",  Default = false, Callback = function(v) G.NoShadows=v; apply_visuals() end })
+TabVisual:AddColorpicker({ Name = "Cor Theme", Default = Color3.fromRGB(138,43,226), Callback = function(v) G.ThemeColor=v end })
+
+-- ======== ABA JERSEYS ========
+local TabJersey = Window:MakeTab({ Name = "Jerseys", Icon = "rbxassetid://4483345998" })
+local TIMES = {"PRETA","LARANJA","ROXO","VERMELHA","BRANCA"}
+
+TabJersey:AddSection({ Name = "Tuxedo" })
+local tt="PRETA"
+TabJersey:AddDropdown({ Name="Time Tuxedo", Default="PRETA", Options=TIMES, Callback=function(v) tt=v; if active_jersey=="tuxedo" then local d=JERSEY_TUXEDO[v]; start_jersey(d.Shirt,d.Pants,"tuxedo") end end })
+TabJersey:AddToggle({ Name="Vestir Tuxedo", Default=false, Callback=function(v) if v then local d=JERSEY_TUXEDO[tt]; start_jersey(d.Shirt,d.Pants,"tuxedo") elseif active_jersey=="tuxedo" then restore_clothes() end end })
+
+TabJersey:AddSection({ Name = "Dragon Tuxedo" })
+local dt="PRETA"
+TabJersey:AddDropdown({ Name="Time Dragao", Default="PRETA", Options=TIMES, Callback=function(v) dt=v; if active_jersey=="dragao" then local d=JERSEY_DRAGAO[v]; start_jersey(d.Shirt,d.Pants,"dragao") end end })
+TabJersey:AddToggle({ Name="Vestir Dragon Tuxedo", Default=false, Callback=function(v) if v then local d=JERSEY_DRAGAO[dt]; start_jersey(d.Shirt,d.Pants,"dragao") elseif active_jersey=="dragao" then restore_clothes() end end })
+
+TabJersey:AddSection({ Name = "Pijama" })
+local pt="PRETA"
+TabJersey:AddDropdown({ Name="Time Pijama", Default="PRETA", Options=TIMES, Callback=function(v) pt=v; if active_jersey=="pijama" then local d=JERSEY_PIJAMA[v]; start_jersey(d.Shirt,d.Pants,"pijama") end end })
+TabJersey:AddToggle({ Name="Vestir Pijama", Default=false, Callback=function(v) if v then local d=JERSEY_PIJAMA[pt]; start_jersey(d.Shirt,d.Pants,"pijama") elseif active_jersey=="pijama" then restore_clothes() end end })
+
+TabJersey:AddSection({ Name = "Classic" })
+local ct="PRETA"
+TabJersey:AddDropdown({ Name="Time Classic", Default="PRETA", Options=TIMES, Callback=function(v) ct=v; if active_jersey=="classic" then local d=JERSEY_CLASSIC[v]; start_jersey(d.Shirt,d.Pants,"classic") end end })
+TabJersey:AddToggle({ Name="Vestir Classic", Default=false, Callback=function(v) if v then local d=JERSEY_CLASSIC[ct]; start_jersey(d.Shirt,d.Pants,"classic") elseif active_jersey=="classic" then restore_clothes() end end })
+
+TabJersey:AddSection({ Name = "Sparkle Time" })
+local st="PRETA"
+TabJersey:AddDropdown({ Name="Time Sparkle", Default="PRETA", Options=TIMES, Callback=function(v) st=v; if active_jersey=="sparkle" then local d=JERSEY_SPARKLE[v]; start_jersey(d.Shirt,d.Pants,"sparkle") end end })
+TabJersey:AddToggle({ Name="Vestir Sparkle Time", Default=false, Callback=function(v) if v then local d=JERSEY_SPARKLE[st]; start_jersey(d.Shirt,d.Pants,"sparkle") elseif active_jersey=="sparkle" then restore_clothes() end end })
+TabJersey:AddButton({ Name="Remover Jersey", Callback=function() restore_clothes() end })
+
+-- ======== ABA AUTO SPIN ========
+local TabSpin = Window:MakeTab({ Name = "Auto Spin", Icon = "rbxassetid://4483345998" })
+TabSpin:AddSection({ Name = "Recompensas" })
+TabSpin:AddToggle({ Name="Auto Spin Style",      Default=false, Callback=function(v) G.AutoSpinStyle=v end })
+TabSpin:AddToggle({ Name="Auto Spin Habilidade", Default=false, Callback=function(v) G.AutoSpinHabi=v  end })
+TabSpin:AddToggle({ Name="Auto Yen",             Default=false, Callback=function(v) G.AutoYen=v       end })
+
+-- ======== ABA CORES ========
+local TabCores = Window:MakeTab({ Name = "Cores", Icon = "rbxassetid://4483345998" })
+TabCores:AddSection({ Name = "Cor da Interface" })
+local CORES = {
+    {nome="Roxo",    cor=Color3.fromRGB(138,43,226)},
+    {nome="Azul",    cor=Color3.fromRGB(0,120,255)},
+    {nome="Vermelho",cor=Color3.fromRGB(220,30,30)},
+    {nome="Laranja", cor=Color3.fromRGB(255,140,0)},
+    {nome="Preto",   cor=Color3.fromRGB(30,30,30)},
+    {nome="Branco",  cor=Color3.fromRGB(255,255,255)},
+}
+for _, c in ipairs(CORES) do
+    TabCores:AddButton({ Name=c.nome, Callback=function()
+        G.ThemeColor=c.cor
+        OrionLib:MakeNotification({Name="DRACO",Content="Cor: "..c.nome,Image="rbxassetid://4483345998",Time=2})
+    end})
 end
 
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "CHEternalGUI"
-ScreenGui.ResetOnSpawn = false
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
-ScreenGui.DisplayOrder = 999
-ScreenGui.IgnoreGuiInset = true
-ScreenGui.Parent = gui_parent
-
--- Janela principal
-local Window = Instance.new("Frame")
-Window.Name = "Window"
-Window.Size = UDim2.fromOffset(420, 340)
-Window.Position = UDim2.fromOffset(300, 200)
-Window.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
-Window.BorderSizePixel = 0
-Window.ZIndex = 10
-Window.Parent = ScreenGui
-Instance.new("UICorner", Window).CornerRadius = UDim.new(0, 10)
-local winStroke = Instance.new("UIStroke", Window)
-winStroke.Color = Color3.fromRGB(100, 0, 200)
-winStroke.Thickness = 1.5
-
--- Topbar (título + fechar)
-local TopBar = Instance.new("Frame")
-TopBar.Name = "TopBar"
-TopBar.Size = UDim2.new(1, 0, 0, 36)
-TopBar.BackgroundColor3 = Color3.fromRGB(22, 22, 30)
-TopBar.BorderSizePixel = 0
-TopBar.ZIndex = 11
-TopBar.Parent = Window
-Instance.new("UICorner", TopBar).CornerRadius = UDim.new(0, 10)
-
--- Cobre cantos inferiores da topbar
-local TopBarFix = Instance.new("Frame")
-TopBarFix.Size = UDim2.new(1, 0, 0, 10)
-TopBarFix.Position = UDim2.new(0, 0, 1, -10)
-TopBarFix.BackgroundColor3 = Color3.fromRGB(22, 22, 30)
-TopBarFix.BorderSizePixel = 0
-TopBarFix.ZIndex = 11
-TopBarFix.Parent = TopBar
-
-local TitleLbl = Instance.new("TextLabel")
-TitleLbl.Size = UDim2.new(1, -40, 1, 0)
-TitleLbl.Position = UDim2.fromOffset(14, 0)
-TitleLbl.BackgroundTransparency = 1
-TitleLbl.Text = "CH | ETERNAL"
-TitleLbl.TextColor3 = Color3.fromRGB(160, 60, 255)
-TitleLbl.TextSize = 15
-TitleLbl.Font = Enum.Font.GothamBold
-TitleLbl.TextXAlignment = Enum.TextXAlignment.Left
-TitleLbl.ZIndex = 12
-TitleLbl.Parent = TopBar
-
-local CloseBtn = Instance.new("TextButton")
-CloseBtn.Size = UDim2.fromOffset(20, 20)
-CloseBtn.Position = UDim2.new(1, -28, 0.5, -10)
-CloseBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-CloseBtn.Text = "×"
-CloseBtn.TextColor3 = Color3.new(1,1,1)
-CloseBtn.TextSize = 14
-CloseBtn.Font = Enum.Font.GothamBold
-CloseBtn.BorderSizePixel = 0
-CloseBtn.ZIndex = 12
-CloseBtn.Parent = TopBar
-Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(1, 0)
-CloseBtn.MouseButton1Click:Connect(function() Window.Visible = false end)
-
--- Barra de abas
-local TabBar = Instance.new("Frame")
-TabBar.Name = "TabBar"
-TabBar.Size = UDim2.new(1, -16, 0, 30)
-TabBar.Position = UDim2.fromOffset(8, 42)
-TabBar.BackgroundColor3 = Color3.fromRGB(12, 12, 18)
-TabBar.BorderSizePixel = 0
-TabBar.ZIndex = 11
-TabBar.Parent = Window
-Instance.new("UICorner", TabBar).CornerRadius = UDim.new(0, 8)
-
-local TabLayout = Instance.new("UIListLayout")
-TabLayout.FillDirection = Enum.FillDirection.Horizontal
-TabLayout.SortOrder = Enum.SortOrder.LayoutOrder
-TabLayout.Padding = UDim.new(0, 2)
-TabLayout.Parent = TabBar
-
-local UIPadding = Instance.new("UIPadding")
-UIPadding.PaddingLeft = UDim.new(0, 4)
-UIPadding.PaddingTop = UDim.new(0, 4)
-UIPadding.PaddingRight = UDim.new(0, 4)
-UIPadding.PaddingBottom = UDim.new(0, 4)
-UIPadding.Parent = TabBar
-
--- Área de conteúdo das abas
-local ContentArea = Instance.new("Frame")
-ContentArea.Name = "ContentArea"
-ContentArea.Size = UDim2.new(1, -16, 1, -88)
-ContentArea.Position = UDim2.fromOffset(8, 80)
-ContentArea.BackgroundTransparency = 1
-ContentArea.ZIndex = 11
-ContentArea.Parent = Window
-
--- Função para criar aba
-local tab_buttons = {}
-local tab_pages = {}
-local active_tab = nil
-
-local function setActiveTab(name)
-    active_tab = name
-    for n, btn in pairs(tab_buttons) do
-        if n == name then
-            btn.BackgroundColor3 = Color3.fromRGB(138, 43, 226)
-            btn.TextColor3 = Color3.new(1,1,1)
-        else
-            btn.BackgroundColor3 = Color3.fromRGB(12, 12, 18)
-            btn.TextColor3 = Color3.fromRGB(180, 180, 180)
-        end
-    end
-    for n, page in pairs(tab_pages) do
-        page.Visible = (n == name)
-    end
-end
-
-local TAB_NAMES = {"COMBATE", "GIRAR", "MOVIMENTAÇÃO", "EQUIPAME"}
-
-for i, name in ipairs(TAB_NAMES) do
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0.25, -3, 1, -8)
-    btn.BackgroundColor3 = Color3.fromRGB(12, 12, 18)
-    btn.Text = name
-    btn.TextColor3 = Color3.fromRGB(180, 180, 180)
-    btn.TextSize = 11
-    btn.Font = Enum.Font.GothamBold
-    btn.BorderSizePixel = 0
-    btn.ZIndex = 12
-    btn.LayoutOrder = i
-    btn.Parent = TabBar
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
-
-    local page = Instance.new("ScrollingFrame")
-    page.Name = name
-    page.Size = UDim2.fromScale(1, 1)
-    page.BackgroundTransparency = 1
-    page.BorderSizePixel = 0
-    page.ScrollBarThickness = 3
-    page.ScrollBarImageColor3 = Color3.fromRGB(138, 43, 226)
-    page.CanvasSize = UDim2.fromOffset(0, 0)
-    page.AutomaticCanvasSize = Enum.AutomaticSize.Y
-    page.ZIndex = 11
-    page.Visible = false
-    page.Parent = ContentArea
-
-    local pageLayout = Instance.new("UIListLayout")
-    pageLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    pageLayout.Padding = UDim.new(0, 6)
-    pageLayout.Parent = page
-
-    local pagePad = Instance.new("UIPadding")
-    pagePad.PaddingTop = UDim.new(0, 4)
-    pagePad.PaddingBottom = UDim.new(0, 4)
-    pagePad.Parent = page
-
-    tab_buttons[name] = btn
-    tab_pages[name] = page
-
-    btn.MouseButton1Click:Connect(function() setActiveTab(name) end)
-end
-
-setActiveTab("COMBATE")
+-- ======== ABA MISC ========
+local TabMisc = Window:MakeTab({ Name = "Misc", Icon = "rbxassetid://4483345998" })
+TabMisc:AddSection({ Name = "Info" })
+TabMisc:AddLabel("DRACO - Script Volleyball")
+TabMisc:AddLabel("Criador: draco goat")
+TabMisc:AddParagraph("Teclas", "F = Freeze | G = Leed Feat | L = Auto Long")
 
 -- =====================
--- COMPONENTES
+-- NOTIFICAÇÃO FINAL
 -- =====================
 
--- Linha separadora de seção
-local function addSection(page, text)
-    local row = Instance.new("Frame")
-    row.Size = UDim2.new(1, 0, 0, 22)
-    row.BackgroundTransparency = 1
-    row.BorderSizePixel = 0
-    row.ZIndex = 12
-    row.Parent = page
+OrionLib:MakeNotification({
+    Name    = "DRACO",
+    Content = "Script carregado! | Criador: draco goat",
+    Image   = "rbxassetid://4483345998",
+    Time    = 4
+})
 
-    local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.fromScale(1, 1)
-    lbl.BackgroundTransparency = 1
-    lbl.Text = text
-    lbl.TextColor3 = Color3.fromRGB(138, 43, 226)
-    lbl.TextSize = 12
-    lbl.Font = Enum.Font.GothamBold
-    lbl.TextXAlignment = Enum.TextXAlignment.Left
-    lbl.ZIndex = 13
-    lbl.Parent = row
-
-    local line = Instance.new("Frame")
-    line.Size = UDim2.new(1, 0, 0, 1)
-    line.Position = UDim2.new(0, 0, 1, -1)
-    line.BackgroundColor3 = Color3.fromRGB(80, 0, 160)
-    line.BorderSizePixel = 0
-    line.ZIndex = 13
-    line.Parent = row
-    return row
-end
+OrionLib:Init()
